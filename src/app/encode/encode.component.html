@@ -37,6 +37,7 @@
 
       <div *ngIf="encrypted">
         <div class="result">
+          <mat-checkbox formControlName="includeUrl">Include URL in QR code</mat-checkbox>
           <div class="qr" (click)="copyImage()">
             <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
           </div>

@@ -28,15 +28,18 @@ export class EncodeComponent implements OnInit {
   password = new FormControl('');
   confirmPassword = new FormControl('');
   message = new FormControl('');
+  includeUrl = new FormControl(true);
 
   form = new FormGroup({
     password: this.password,
     confirmPassword: this.confirmPassword,
     message: this.message,
+    includeUrl: this.includeUrl
   });
 
   phraseHash = '';
   encrypted: any;
+  checked = false;
 
   phraseHashSvg!: SafeResourceUrl;
   svg = '';
@@ -66,10 +69,10 @@ export class EncodeComponent implements OnInit {
       ).subscribe((x) => {
         if (x.message && x.password) {
           this.encrypted = this.crypto.encode(x.message, x.password);
-          const content = Location.joinWithSlash(
+          const content = x.includeUrl ? Location.joinWithSlash(
             this.constantsService.baseURI,
             this.location.prepareExternalUrl('decode/' + encode(this.encrypted))
-          );
+          ) : this.encrypted;
           this.svg = this.qrcodeService.base64(content, this.encrypted);
           this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
         } else {

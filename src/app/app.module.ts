@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { APP_BASE_HREF, HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
+import {HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -41,7 +42,8 @@ import { InstructionsComponent } from './instructions/instructions.component';
     MatSnackBarModule,
     MatIconModule,
     MatExpansionModule,
-    ClipboardModule
+    ClipboardModule,
+    MatCheckboxModule
   ],
   providers: [
     Location,
