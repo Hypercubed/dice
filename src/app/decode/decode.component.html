@@ -13,10 +13,10 @@
       </mat-expansion-panel-header>
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Encryption pass phase</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" />
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" (change)="onPasswordChanged()" />
         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
       </mat-form-field>
-      <button type="button" mat-raised-button (click)="passwordComplete = true">
+      <button type="button" mat-raised-button (click)="onPasswordOk()">
         OK
       </button>
     </mat-expansion-panel>
@@ -37,11 +37,15 @@
       </mat-form-field> 
     </mat-expansion-panel>
 
-    <mat-expansion-panel [expanded]="!!decrypted">
+    <mat-expansion-panel class="result-panel" [expanded]="decryptionSuccess" [disabled]="!passwordComplete || !decryptionSuccess">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Result
+          Result 
         </mat-panel-title>
+        <mat-panel-description>
+          <i *ngIf="!passwordComplete">Confirm Password</i>
+          <i *ngIf="passwordComplete && !decryptionSuccess">Decryption Failed.  Check pass phase or encrypted text</i>
+        </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="result" *ngIf="encoded.value">
         <div class="decoded" #decodedElm>

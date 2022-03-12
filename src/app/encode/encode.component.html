@@ -13,8 +13,7 @@
       </mat-expansion-panel-header>
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Pass phase</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" />
-        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        <input matInput type="password" formControlName="password" />
       </mat-form-field>
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Confirm Pass phase</mat-label>
@@ -22,7 +21,7 @@
       </mat-form-field>
     </mat-expansion-panel>
     
-    <mat-expansion-panel [expanded]="passwordComplete">
+    <mat-expansion-panel [expanded]="passwordComplete" [disabled]="!passwordComplete">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Text to encrypt
@@ -40,6 +39,9 @@
         <div class="result">
           <div class="qr" (click)="copyImage()">
             <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+          </div>
+          <div class="code">
+            {{ encrypted }}
           </div>
           <button mat-raised-button [cdkCopyToClipboard]="encrypted">
             Copy code to clipboard

@@ -40,6 +40,7 @@ export class DecodeComponent implements OnInit {
   });
 
   decrypted = '';
+  decryptionSuccess = false;
   passwordComplete = false;
 
   html5QrcodeScanner!: Html5QrcodeScanner;
@@ -51,17 +52,11 @@ export class DecodeComponent implements OnInit {
   constructor(private readonly crypto: CryptoService, private readonly route: ActivatedRoute, private readonly location: Location, private readonly constantsService: ConstantsService) {}
 
   ngOnInit() {
-    this.form.valueChanges
+    this.encoded.valueChanges
       .pipe(
         debounceTime(200),
         distinctUntilChanged()
-      ).subscribe((x) => {
-      this.decrypted = (x.encoded && x.password) ? this.crypto.decode(x.encoded, x.password) : '';
-      if (this.decrypted) {
-        this.success();
-        this.passwordComplete = true;
-      }
-    });
+      ).subscribe(() => this.decode());
 
     this.route.params.subscribe(params => {
       const param = params['encoded'];
@@ -94,13 +89,39 @@ export class DecodeComponent implements OnInit {
       }
     }, undefined);
   }
+
+  onPasswordChanged() {
+    this.passwordComplete = false;
+    this.decode();
+  }
+
+  onPasswordOk() {
+    this.passwordComplete = true;
+    this.decode();
+  }
   
   another() {
     this.encoded.setValue('');
     this.decrypted = '';
   }
 
+  decode() {
+    if (this.passwordComplete) {
+      const x = this.form.value;
+      this.decrypted = (x.encoded && x.password) ? this.crypto.decode(x.encoded, x.password) : '';
+      if (this.decrypted) {
+        this.success();
+      } else {
+        this.fail();
+      }
+    } else {
+      this.decryptionSuccess = false;
+      this.decrypted = '';
+    }
+  }
+
   private success() {
+    this.decryptionSuccess = true;
     if (this.constantsService.isMobile) {
       beep(100, 520, 200);
       navigator.vibrate(200);
@@ -108,6 +129,7 @@ export class DecodeComponent implements OnInit {
   }
 
   private fail() {
+    this.decryptionSuccess = false;
     if (this.constantsService.isMobile) {
       beep(999, 220, 300)
       navigator.vibrate(1000);

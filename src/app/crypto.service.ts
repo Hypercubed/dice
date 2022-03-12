@@ -64,10 +64,14 @@ export class CryptoService {
     encrypted = (encrypted || '').replace(/\s/g,'');
     password = (password || '').trim();
 
-    const cipherParams = OpenSSL.parse(encrypted);
-    const [key, iv] = this.pbkdf2(password, cipherParams.salt);
+    try {
+      const cipherParams = OpenSSL.parse(encrypted);
+      const [key, iv] = this.pbkdf2(password, cipherParams.salt);
 
-    return AES.decrypt(cipherParams, key, { iv }).toString(Utf8);
+      return AES.decrypt(cipherParams, key, { iv }).toString(Utf8);      
+    } catch(_err) {
+      return '';
+    }
   }
 
   private pbkdf2(password: string, salt: WordArray): [WordArray, WordArray] {
