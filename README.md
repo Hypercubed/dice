@@ -10,6 +10,7 @@ DICE is designed to be easily deployed to any static hosting sites.  Feel free t
 
 - https://hypercubed.github.io/dice/
 - https://dice-ipfs.on.fleek.co/
+- https://dice-netlify.netlify.app/
 
 ### Encoding
 
