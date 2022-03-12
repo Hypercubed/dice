@@ -1,0 +1,64 @@
+<form [formGroup]="form">
+
+  <mat-accordion>
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Encryption pass phase
+        </mat-panel-title>
+        <mat-panel-description>
+          <span *ngIf="!password.value">Enter an pass phase</span>
+          <span class="error" *ngIf="password.value && confirmPassword.value !== password.value">Pass phases must match</span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Pass phase</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" />
+        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </mat-form-field>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Confirm Pass phase</mat-label>
+        <input matInput type="password" formControlName="confirmPassword" />
+      </mat-form-field>
+    </mat-expansion-panel>
+    
+    <mat-expansion-panel [expanded]="passwordComplete">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Text to encrypt
+        </mat-panel-title>
+        <mat-panel-description>
+          <span *ngIf="!message.value">Enter text to encrypt</span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Text to encrypt</mat-label>
+        <textarea matInput formControlName="message"></textarea>
+      </mat-form-field>
+
+      <div *ngIf="encrypted">
+        <div class="result">
+          <div class="qr" (click)="copyImage()">
+            <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+          </div>
+          <button mat-raised-button [cdkCopyToClipboard]="encrypted">
+            Copy code to clipboard
+          </button>
+          <button mat-raised-button (click)="copyImage()">
+            Copy QRCode to clipboard
+          </button>
+          <button mat-raised-button (click)="downloadImage()">
+            Download QR Code
+          </button>
+        </div>       
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-card class="example-card" *ngIf="message.value">
+    <mat-card-content>
+      <p>The encryption process is the same as the <a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a>:</p>
+      <code>echo -n "{{message.value}}" | openssl enc -e -aes-256-cbc - -base64 -pbkdf2</code>
+    </mat-card-content>
+  </mat-card>
+</form>

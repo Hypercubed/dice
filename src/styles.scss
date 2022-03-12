@@ -1,0 +1,55 @@
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+.page-container {
+  min-width: 150px;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+form {
+  display: flex;
+  gap: 30px 20px;
+  flex-direction: column;
+  margin: 0 auto;
+
+  .example-full-width {
+    width: 100%;
+  }
+
+  .example-card {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  svg {
+    width: 300px;
+  }
+}
+
+#reader__dashboard_section_swaplink {
+  display: none;
+}
+
+#section-to-print {
+  display: none;
+  outline: 2px solid black;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #section-to-print, #section-to-print * {
+    display: unset;
+    visibility: visible;
+  }
+  #section-to-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

@@ -1,0 +1,18 @@
+<div class="page-container">
+  <mat-toolbar>
+    <a mat-icon-button routerLink="/">
+      <mat-icon>home</mat-icon>
+    </a>
+
+    <span>DICE</span>
+    <span class="example-spacer"></span>
+
+    <a mat-flat-button routerLink="encode" routerLinkActive="mat-accent">Encode</a>
+    &nbsp;
+    <a mat-flat-button routerLink="decode" routerLinkActive="mat-accent" >Decode</a>
+  </mat-toolbar>
+
+  <p></p>
+
+  <router-outlet></router-outlet>
+</div>
