@@ -12,11 +12,15 @@ if (environment.production) {
 
 function fileExists(url: string) {
   if(url){
+    try {
       var req = new XMLHttpRequest();
       req.open('GET', url, false);
       req.send();
-      return req.status==200;
-  } else {
+    } catch (err) {
       return false;
+    }
+    return req.status==200;
+  } else {
+    return false;
   }
 }

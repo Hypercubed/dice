@@ -8,9 +8,18 @@ Messages are encoded using an encryption password and aes-256-cbc encryption, th
 
 DICE is designed to be easily deployed to any static hosting sites.  Feel free to clone and deploy DICE to your own site or use one of the following deployments:
 
+### Auto-deployed form this repo
+
 - https://hypercubed.github.io/dice/
 - https://dice-ipfs.on.fleek.co/
-- https://dice-netlify.netlify.app/
+- https://dice-on.netlify.app/
+
+### Manual deployments (may be out of date)
+
+- https://dice.hypercubed.repl.co/
+- https://dice-on.surge.sh/
+- http://dice-on.s3-website-us-east-1.amazonaws.com/
+- https://gateway.pinata.cloud/ipfs/QmboFxoGxf3PSkYASZ2X56Pwv6quKrcW6sdoCdqVRgSMeX/#/
 
 ### Encoding
 
