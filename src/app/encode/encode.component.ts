@@ -73,7 +73,7 @@ export class EncodeComponent implements OnInit {
             this.constantsService.baseURI,
             this.location.prepareExternalUrl('decode/' + encode(this.encrypted))
           ) : this.encrypted;
-          this.svg = this.qrcodeService.base64(content, this.encrypted);
+          this.svg = this.qrcodeService.base64(content);
           this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
         } else {
           this.encrypted = this.encryptedSvg = this.svg ='';

@@ -10,16 +10,16 @@ export class QrcodeService {
 
   constructor(private readonly sanitizer: DomSanitizer) { }
 
-  svg(content: string, message: string = content) {
+  svg(content: string) {
     return new QRCode({ content, ecl: 'H', join: true }).svg();
   }
 
-  base64(content: string, message: string = content) {
-    const svg = this.svg(content, message);
+  base64(content: string) {
+    const svg = this.svg(content);
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   }
 
-  trusted(content: string, message: string = content) {
-    return this.sanitizer.bypassSecurityTrustUrl(this.base64(content, message));
+  trusted(content: string) {
+    return this.sanitizer.bypassSecurityTrustUrl(this.base64(content));
   }
 }
