@@ -12,10 +12,10 @@ const testDecoding = [
   ['QAseekbshO6', 'Jerrie', 'U2FsdGVkX1/XXp5JsPO8I8J1KfqWKHwfPpUywUx4Nx4='],
   ['u3g2sk6DC', 'Nulla nisl. Nunc nisl. Duis bibendum', 'U2FsdGVkX1/RL2eQscpOk4coH+oCkR50ei/rFYTCqeqTjpAX6G/iavF1Su3l05j0EuBKSCwgaeymu+qFeKYD2Q=='],
   // OpenSSL 1.1.1m
-  ['PAAxipHavI', 'U2FsdGVkX1+c6iWxTaCX77vrpz3h+JNmK0z89MvxDaM=', 'Rustidge'],
-  ['Did you see a small dog with a red collar', 'U2FsdGVkX1/YB40FRxDAbPh1pD1vm69kaNi3JMT5vv34tbUmSvd5xYE+GdjLfNIg9/xvdIv+RQF9HBIAPim/Yg==', 'The coffee shop closes at midnight'],
+  ['PAAxipHavI', 'Rustidge', 'U2FsdGVkX1+c6iWxTaCX77vrpz3h+JNmK0z89MvxDaM='],
+  ['Did you see a small dog with a red collar', 'The coffee shop closes at midnight', 'U2FsdGVkX1/YB40FRxDAbPh1pD1vm69kaNi3JMT5vv34tbUmSvd5xYE+GdjLfNIg9/xvdIv+RQF9HBIAPim/Yg=='],
   // LibreSSL 3.4.2
-  ['Virtual grid-enabled moderator', 'U2FsdGVkX19loYHdQu3erlXT/1j4XPee+yFtxKpA+WOSpOa8zqZgu+yxSzC1xxlaAlmzPunXhIG6laelq3EPbQ==', 'Reduced analyzing knowledge base'],
+  ['Virtual grid-enabled moderator', 'Reduced analyzing knowledge base', 'U2FsdGVkX19loYHdQu3erlXT/1j4XPee+yFtxKpA+WOSpOa8zqZgu+yxSzC1xxlaAlmzPunXhIG6laelq3EPbQ=='],
 ];
 
 describe('CryptoService', () => {

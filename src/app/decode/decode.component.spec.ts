@@ -4,10 +4,10 @@ import { DecodeComponent } from './decode.component';
 
 
 import { MatToolbarModule } from '@angular/material/toolbar';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatCardModule } from '@angular/material/card';
-// import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('DecodeComponent', () => {
   let component: DecodeComponent;
@@ -16,7 +16,16 @@ describe('DecodeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatToolbarModule, MatSnackBarModule],
-      declarations: [ DecodeComponent ]
+      declarations: [ DecodeComponent ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({})
+          }
+        }
+      ]
     })
     .compileComponents();
   });
