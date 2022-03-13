@@ -11,7 +11,7 @@ if (environment.production) {
 }
 
 function fileExists(url: string) {
-  if(url){
+  if (url) {
     try {
       var req = new XMLHttpRequest();
       req.open('GET', url, false);
@@ -19,7 +19,7 @@ function fileExists(url: string) {
     } catch (err) {
       return false;
     }
-    return req.status==200;
+    return req.status == 200;
   } else {
     return false;
   }

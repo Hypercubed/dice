@@ -5,14 +5,16 @@ import { QrcodeService } from '../qrcode.service';
 
 @Component({
   templateUrl: './instructions.component.html',
-  styleUrls: ['./instructions.component.scss']
+  styleUrls: ['./instructions.component.scss'],
 })
 export class InstructionsComponent implements OnInit {
   url!: string;
   pageSvg!: SafeUrl;
 
-  constructor(private readonly service: QrcodeService, private readonly constantsService: ConstantsService) {
-  }
+  constructor(
+    private readonly service: QrcodeService,
+    private readonly constantsService: ConstantsService
+  ) {}
 
   ngOnInit() {
     this.url = this.constantsService.baseURI;

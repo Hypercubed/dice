@@ -14,23 +14,23 @@ const DEBUG = false;
 // Constants to match OpenSSL output
 const hasher = CryptoJS.algo.SHA256;
 const iterations = 10000;
-const SALT_WORDS = 8/4;
-const KEY_WORDS = 32/4;
-const IV_WORDS = 16/4;
+const SALT_WORDS = 8 / 4;
+const KEY_WORDS = 32 / 4;
+const IV_WORDS = 16 / 4;
 const keySize = KEY_WORDS + IV_WORDS;
 
 const PBKDF2 = CryptoJS.algo.PBKDF2.create({ keySize, iterations, hasher });
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CryptoService {
   constructor(public sanitizer: DomSanitizer) {}
 
-  getKey(password: string): [WordArray, WordArray, WordArray]  {
+  getKey(password: string): [WordArray, WordArray, WordArray] {
     password = (password || '').trim();
     DEBUG && console.time('salt');
-    const salt = WordArray.random(SALT_WORDS*4);
+    const salt = WordArray.random(SALT_WORDS * 4);
     DEBUG && console.timeEnd('salt');
 
     DEBUG && console.time('pbkdf2');
@@ -44,7 +44,7 @@ export class CryptoService {
     message = (message || '').trim();
 
     DEBUG && console.time('encrypt');
-    const cipherParams = AES.encrypt(message, key,  { iv });
+    const cipherParams = AES.encrypt(message, key, { iv });
     DEBUG && console.timeEnd('encrypt');
 
     cipherParams.salt = salt;
@@ -61,15 +61,15 @@ export class CryptoService {
   }
 
   decode(encrypted: string, password: string) {
-    encrypted = (encrypted || '').replace(/\s/g,'');
+    encrypted = (encrypted || '').replace(/\s/g, '');
     password = (password || '').trim();
 
     try {
       const cipherParams = OpenSSL.parse(encrypted);
       const [key, iv] = this.pbkdf2(password, cipherParams.salt);
 
-      return AES.decrypt(cipherParams, key, { iv }).toString(Utf8);      
-    } catch(_err) {
+      return AES.decrypt(cipherParams, key, { iv }).toString(Utf8);
+    } catch (_err) {
       return '';
     }
   }
@@ -78,7 +78,9 @@ export class CryptoService {
     const keyIv = PBKDF2.compute(password, salt);
 
     const key = WordArray.create(keyIv.words.slice(0, KEY_WORDS));
-    const iv = WordArray.create(keyIv.words.slice(KEY_WORDS, keyIv.words.length));
+    const iv = WordArray.create(
+      keyIv.words.slice(KEY_WORDS, keyIv.words.length)
+    );
 
     return [key, iv];
   }

@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@angular/core';
 import isMobile from 'ismobilejs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ConstantsService {
   baseURI: string;

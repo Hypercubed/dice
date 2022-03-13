@@ -19,10 +19,9 @@ const { clipboard } = window.navigator as any;
 
 @Component({
   templateUrl: './encode.component.html',
-  styleUrls: ['./encode.component.scss']
+  styleUrls: ['./encode.component.scss'],
 })
 export class EncodeComponent implements OnInit {
-
   hide = true;
 
   password = new FormControl('');
@@ -34,7 +33,7 @@ export class EncodeComponent implements OnInit {
     password: this.password,
     confirmPassword: this.confirmPassword,
     message: this.message,
-    includeUrl: this.includeUrl
+    includeUrl: this.includeUrl,
   });
 
   phraseHash = '';
@@ -47,7 +46,10 @@ export class EncodeComponent implements OnInit {
   encryptedSvg!: SafeResourceUrl;
 
   get passwordComplete() {
-    return !!this.confirmPassword.value && this.confirmPassword.value === this.password.value
+    return (
+      !!this.confirmPassword.value &&
+      this.confirmPassword.value === this.password.value
+    );
   }
 
   constructor(
@@ -60,23 +62,27 @@ export class EncodeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.password.valueChanges.subscribe(() => this.confirmPassword.setValue(''));
+    this.password.valueChanges.subscribe(() =>
+      this.confirmPassword.setValue('')
+    );
 
     this.form.valueChanges
-      .pipe(
-        debounceTime(200),
-        distinctUntilChanged()
-      ).subscribe((x) => {
+      .pipe(debounceTime(200), distinctUntilChanged())
+      .subscribe((x) => {
         if (x.message && x.password) {
           this.encrypted = this.crypto.encode(x.message, x.password);
-          const content = x.includeUrl ? Location.joinWithSlash(
-            this.constantsService.baseURI,
-            this.location.prepareExternalUrl('decode/' + encode(this.encrypted))
-          ) : this.encrypted;
+          const content = x.includeUrl
+            ? Location.joinWithSlash(
+                this.constantsService.baseURI,
+                this.location.prepareExternalUrl(
+                  'decode/' + encode(this.encrypted)
+                )
+              )
+            : this.encrypted;
           this.svg = this.qrcodeService.base64(content);
           this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
         } else {
-          this.encrypted = this.encryptedSvg = this.svg ='';
+          this.encrypted = this.encryptedSvg = this.svg = '';
         }
       });
   }
@@ -86,9 +92,13 @@ export class EncodeComponent implements OnInit {
   }
 
   copyImage() {
-    createCanvas(this.svg, 'name', (canvas: { toBlob: (arg0: (blob: any) => void) => void; }) => {
-      canvas.toBlob((blob: Blob) => this.clip(blob))
-    });
+    createCanvas(
+      this.svg,
+      'name',
+      (canvas: { toBlob: (arg0: (blob: any) => void) => void }) => {
+        canvas.toBlob((blob: Blob) => this.clip(blob));
+      }
+    );
   }
 
   clip(blob: Blob) {

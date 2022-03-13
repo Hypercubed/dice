@@ -12,10 +12,9 @@ describe('EncodeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatSnackBarModule],
-      declarations: [ EncodeComponent ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
+      declarations: [EncodeComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   });
 
   beforeEach(() => {

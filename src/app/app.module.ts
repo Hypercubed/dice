@@ -2,7 +2,11 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
+import {
+  HashLocationStrategy,
+  Location,
+  LocationStrategy,
+} from '@angular/common';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -27,7 +31,7 @@ import { InstructionsComponent } from './instructions/instructions.component';
     AppComponent,
     EncodeComponent,
     DecodeComponent,
-    InstructionsComponent
+    InstructionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,12 +47,12 @@ import { InstructionsComponent } from './instructions/instructions.component';
     MatIconModule,
     MatExpansionModule,
     ClipboardModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   providers: [
     Location,
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

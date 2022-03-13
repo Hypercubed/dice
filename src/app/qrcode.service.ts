@@ -4,11 +4,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import QRCode from 'qrcode-svg';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QrcodeService {
-
-  constructor(private readonly sanitizer: DomSanitizer) { }
+  constructor(private readonly sanitizer: DomSanitizer) {}
 
   svg(content: string) {
     return new QRCode({ content, ecl: 'H', join: true }).svg();

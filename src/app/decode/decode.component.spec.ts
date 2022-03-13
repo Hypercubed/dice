@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DecodeComponent } from './decode.component';
 
-
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
@@ -16,18 +15,17 @@ describe('DecodeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatToolbarModule, MatSnackBarModule],
-      declarations: [ DecodeComponent ],
+      declarations: [DecodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {
-            params: of({})
-          }
-        }
-      ]
-    })
-    .compileComponents();
+            params: of({}),
+          },
+        },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

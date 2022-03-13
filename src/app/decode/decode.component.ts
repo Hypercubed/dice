@@ -10,26 +10,26 @@ import { ConstantsService } from '../constants.service';
 
 import { CryptoService } from '../crypto.service';
 
-const a = new AudioContext() // browsers limit the number of concurrent audio contexts, so you better re-use'em
+const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
-function beep(vol: number, freq: number, duration: number){
-  const v=a.createOscillator()
-  const u=a.createGain()
-  v.connect(u)
-  v.frequency.value=freq
-  v.type="square"
-  u.connect(a.destination)
-  u.gain.value=vol*0.01
-  v.start(a.currentTime)
-  v.stop(a.currentTime+duration*0.001)
+function beep(vol: number, freq: number, duration: number) {
+  const v = a.createOscillator();
+  const u = a.createGain();
+  v.connect(u);
+  v.frequency.value = freq;
+  v.type = 'square';
+  u.connect(a.destination);
+  u.gain.value = vol * 0.01;
+  v.start(a.currentTime);
+  v.stop(a.currentTime + duration * 0.001);
 }
 
 @Component({
   templateUrl: './decode.component.html',
-  styleUrls: ['./decode.component.scss']
+  styleUrls: ['./decode.component.scss'],
 })
 export class DecodeComponent implements OnInit {
-  hide = true
+  hide = true;
 
   password = new FormControl('');
   encoded = new FormControl('');
@@ -49,16 +49,19 @@ export class DecodeComponent implements OnInit {
   @ViewChild('readerElm') readerElm!: ElementRef;
   @ViewChild('passwordElm') passwordElm!: ElementRef;
 
-  constructor(private readonly crypto: CryptoService, private readonly route: ActivatedRoute, private readonly location: Location, private readonly constantsService: ConstantsService) {}
+  constructor(
+    private readonly crypto: CryptoService,
+    private readonly route: ActivatedRoute,
+    private readonly location: Location,
+    private readonly constantsService: ConstantsService
+  ) {}
 
   ngOnInit() {
     this.encoded.valueChanges
-      .pipe(
-        debounceTime(200),
-        distinctUntilChanged()
-      ).subscribe(() => this.decode());
+      .pipe(debounceTime(200), distinctUntilChanged())
+      .subscribe(() => this.decode());
 
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       const param = params['encoded'];
       if (param && isUrlSafeBase64(param)) {
         const encoded = decode(params['encoded']);
@@ -67,7 +70,11 @@ export class DecodeComponent implements OnInit {
       }
     });
 
-    this.html5QrcodeScanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: 150 }, false);
+    this.html5QrcodeScanner = new Html5QrcodeScanner(
+      'reader',
+      { fps: 10, qrbox: 150 },
+      false
+    );
     this.html5QrcodeScanner.render((encoded) => {
       if (encoded.includes('http')) {
         const segments = encoded.split('/');
@@ -99,7 +106,7 @@ export class DecodeComponent implements OnInit {
     this.passwordComplete = true;
     this.decode();
   }
-  
+
   another() {
     this.encoded.setValue('');
     this.decrypted = '';
@@ -108,7 +115,10 @@ export class DecodeComponent implements OnInit {
   decode() {
     if (this.passwordComplete) {
       const x = this.form.value;
-      this.decrypted = (x.encoded && x.password) ? this.crypto.decode(x.encoded, x.password) : '';
+      this.decrypted =
+        x.encoded && x.password
+          ? this.crypto.decode(x.encoded, x.password)
+          : '';
       if (this.decrypted) {
         this.success();
       } else {
@@ -131,9 +141,8 @@ export class DecodeComponent implements OnInit {
   private fail() {
     this.decryptionSuccess = false;
     if (this.constantsService.isMobile) {
-      beep(999, 220, 300)
+      beep(999, 220, 300);
       navigator.vibrate(1000);
     }
   }
-
 }
