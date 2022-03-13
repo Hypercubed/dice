@@ -8,10 +8,14 @@
     "watch": "ng build --watch --configuration development",
     "watch:test": "ng test",
     "test": "run-s test:*",
+    "test:lint": "ng lint",
     "test:unit": "ng test --browsers=Headless --no-watch",
     "deploy": "npm run deploy:main && npm run deploy:version",
     "deploy:main": "ng deploy",
-    "deploy:version": "node ./deploy-version.js"
+    "deploy:version": "node ./deploy-version.js",
+    "lint": "ng lint",
+    "fix": "run-s fix:*",
+    "fix:lint": "eslint \"src/**/*.{js,ts}\" --ext .ts --fix"
   },
   "private": true,
   "dependencies": {
@@ -37,6 +41,11 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.1.2",
+    "@angular-eslint/builder": "13.1.0",
+    "@angular-eslint/eslint-plugin": "13.1.0",
+    "@angular-eslint/eslint-plugin-template": "13.1.0",
+    "@angular-eslint/schematics": "13.1.0",
+    "@angular-eslint/template-parser": "13.1.0",
     "@angular/cli": "~13.1.2",
     "@angular/compiler-cli": "~13.1.0",
     "@types/crypto-js": "^4.0.2",
@@ -45,7 +54,10 @@
     "@types/qrcode-svg": "^1.1.1",
     "@types/semver": "^7.3.9",
     "@types/url-safe-base64": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "5.11.0",
+    "@typescript-eslint/parser": "5.11.0",
     "angular-cli-ghpages": "^1.0.0",
+    "eslint": "^8.2.0",
     "jasmine-core": "~3.10.0",
     "karma": "^6.3.17",
     "karma-chrome-launcher": "^3.1.1",
