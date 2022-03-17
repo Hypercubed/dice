@@ -11,7 +11,7 @@
           <span *ngIf="!passwordComplete">Enter an encryption pass phase</span>
         </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="example-full-width" appearance="fill">
+      <mat-form-field class="full-width" appearance="fill">
         <mat-label>Encryption pass phase</mat-label>
         <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" (change)="onPasswordChanged()" />
         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -31,7 +31,7 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div id="reader" width="600px" #readerElm></div>
-      <mat-form-field class="example-full-width" appearance="fill">
+      <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to decrypt</mat-label>
         <textarea matInput formControlName="encoded"></textarea>
       </mat-form-field> 

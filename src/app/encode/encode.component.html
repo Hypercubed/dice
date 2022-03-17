@@ -6,18 +6,29 @@
         <mat-panel-title>
           Encryption pass phase
         </mat-panel-title>
-        <mat-panel-description>
-          <span *ngIf="!password.value">Enter an pass phase</span>
+        <!-- <mat-panel-description>
+          <mat-hint *ngIf="!password.value">Enter an pass phase</span>
           <span class="error" *ngIf="password.value && confirmPassword.value !== password.value">Pass phases must match</span>
-        </mat-panel-description>
+        </mat-panel-description> -->
       </mat-expansion-panel-header>
-      <mat-form-field class="example-full-width" appearance="fill">
+      <mat-form-field class="full-width main-password" appearance="fill">
         <mat-label>Pass phase</mat-label>
         <input matInput type="password" formControlName="password" />
+        <password-strength-meter [password]="password.value" [minPasswordLength]="0" (strengthChange)="strengthChange($event)" [enableFeedback]="true"></password-strength-meter>
+        <mat-hint *ngIf="!password.value">Enter an pass phase</mat-hint>
+        <mat-hint *ngIf="password.value">Pass phase is {{ passwordStrength }}</mat-hint>
       </mat-form-field>
-      <mat-form-field class="example-full-width" appearance="fill">
+      <div>
+        &nbsp;
+      </div>
+      <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Pass phase</mat-label>
         <input matInput type="password" formControlName="confirmPassword" />
+        <mat-hint>Confirm pass phase</mat-hint>
+        <mat-error
+          *ngIf="confirmPassword.hasError('notConfirmed')">
+          Password is not the same
+        </mat-error>
       </mat-form-field>
     </mat-expansion-panel>
     
@@ -27,12 +38,12 @@
           Text to encrypt
         </mat-panel-title>
         <mat-panel-description>
-          <span *ngIf="!message.value">Enter text to encrypt</span>
         </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="example-full-width" appearance="fill">
+      <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to encrypt</mat-label>
         <textarea matInput formControlName="message"></textarea>
+        <mat-hint>Enter text to encrypt</mat-hint>
       </mat-form-field>
 
       <div *ngIf="encrypted">
@@ -44,11 +55,11 @@
           <div class="code">
             {{ encrypted }}
           </div>
-          <button mat-raised-button [cdkCopyToClipboard]="encrypted">
-            Copy code to clipboard
-          </button>
           <button mat-raised-button (click)="copyImage()">
             Copy QRCode to clipboard
+          </button>
+          <button mat-raised-button [cdkCopyToClipboard]="encrypted">
+            Copy code to clipboard
           </button>
           <button mat-raised-button (click)="downloadImage()">
             Download QR Code

@@ -36,6 +36,7 @@
     "@angular/platform-browser": "^13.2.6",
     "@angular/platform-browser-dynamic": "^13.2.6",
     "@angular/router": "^13.2.6",
+    "angular-password-strength-meter": "^3.0.1",
     "crypto-js": "^4.1.1",
     "html5-qrcode": "^2.2.0",
     "ismobilejs": "^1.1.1",

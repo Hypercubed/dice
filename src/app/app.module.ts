@@ -16,8 +16,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
-
 import { ClipboardModule } from '@angular/cdk/clipboard';
+
+import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -48,6 +49,7 @@ import { InstructionsComponent } from './instructions/instructions.component';
     MatExpansionModule,
     ClipboardModule,
     MatCheckboxModule,
+    PasswordStrengthMeterModule
   ],
   providers: [
     Location,

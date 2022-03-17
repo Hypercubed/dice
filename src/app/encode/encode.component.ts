@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Location } from '@angular/common';
 
@@ -13,19 +13,50 @@ import { CryptoService } from '../crypto.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
+import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
 
+const scoreText = [
+  'very weak',
+  'weak',
+  'better',
+  'medium',
+  'strong'
+];
+
+function isUndefinedOrEmpty(control: AbstractControl): any | undefined {
+  if (!control || !control.value || control.value.length === 0) {
+    return undefined;
+  }
+}
+
+function confirm(password: AbstractControl): ValidatorFn {
+  const validator = (control: AbstractControl): any | undefined => {
+    if (control.value !== password.value) {
+      return {
+        notConfirmed: {
+          password: password,
+          passwordConfirmation: control.value
+        }
+      }
+    }
+    return undefined;
+  };
+  return validator;
+}
+
 @Component({
   templateUrl: './encode.component.html',
   styleUrls: ['./encode.component.scss'],
+  providers: [PasswordStrengthMeterService]
 })
 export class EncodeComponent implements OnInit {
   hide = true;
 
   password = new FormControl('');
-  confirmPassword = new FormControl('');
+  confirmPassword = new FormControl('', { validators: [confirm(this.password)], updateOn: 'change' });
   message = new FormControl('');
   includeUrl = new FormControl(true);
 
@@ -44,6 +75,8 @@ export class EncodeComponent implements OnInit {
   svg = '';
   blob: any;
   encryptedSvg!: SafeResourceUrl;
+  passwordStrength= '';
+  feedback?: { suggestions: string[]; warning: string };
 
   get passwordComplete() {
     return (
@@ -58,7 +91,8 @@ export class EncodeComponent implements OnInit {
     private snackBar: MatSnackBar,
     private readonly qrcodeService: QrcodeService,
     private readonly location: Location,
-    private readonly constantsService: ConstantsService
+    private readonly constantsService: ConstantsService,
+    private readonly passwordStrengthMeterService: PasswordStrengthMeterService
   ) {}
 
   ngOnInit() {
@@ -85,6 +119,10 @@ export class EncodeComponent implements OnInit {
           this.encrypted = this.encryptedSvg = this.svg = '';
         }
       });
+  }
+
+  strengthChange(score: number) {
+    this.passwordStrength = scoreText[score];
   }
 
   downloadImage() {
