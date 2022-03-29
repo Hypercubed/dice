@@ -19,8 +19,10 @@ DICE is designed to be easily deployed to any static hosting sites.  Feel free t
 
 - https://dice.hypercubed.repl.co/
 - https://dice-on.surge.sh/
+- https://dice-on.glitch.me/
 - http://dice-on.s3-website-us-east-1.amazonaws.com/
 - https://gateway.pinata.cloud/ipfs/QmboFxoGxf3PSkYASZ2X56Pwv6quKrcW6sdoCdqVRgSMeX/#/
+- https://hypercubed.itch.io/dice
 
 ### Encoding
 
