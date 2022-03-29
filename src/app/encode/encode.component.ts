@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidatorFn,
+} from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Location } from '@angular/common';
 
@@ -18,13 +23,7 @@ import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
 
-const scoreText = [
-  'very weak',
-  'weak',
-  'better',
-  'medium',
-  'strong'
-];
+const scoreText = ['very weak', 'weak', 'better', 'medium', 'strong'];
 
 function isUndefinedOrEmpty(control: AbstractControl): any | undefined {
   if (!control || !control.value || control.value.length === 0) {
@@ -38,9 +37,9 @@ function confirm(password: AbstractControl): ValidatorFn {
       return {
         notConfirmed: {
           password: password,
-          passwordConfirmation: control.value
-        }
-      }
+          passwordConfirmation: control.value,
+        },
+      };
     }
     return undefined;
   };
@@ -50,13 +49,16 @@ function confirm(password: AbstractControl): ValidatorFn {
 @Component({
   templateUrl: './encode.component.html',
   styleUrls: ['./encode.component.scss'],
-  providers: [PasswordStrengthMeterService]
+  providers: [PasswordStrengthMeterService],
 })
 export class EncodeComponent implements OnInit {
   hide = true;
 
   password = new FormControl('');
-  confirmPassword = new FormControl('', { validators: [confirm(this.password)], updateOn: 'change' });
+  confirmPassword = new FormControl('', {
+    validators: [confirm(this.password)],
+    updateOn: 'change',
+  });
   message = new FormControl('');
   includeUrl = new FormControl(true);
 
@@ -75,7 +77,7 @@ export class EncodeComponent implements OnInit {
   svg = '';
   blob: any;
   encryptedSvg!: SafeResourceUrl;
-  passwordStrength= '';
+  passwordStrength = '';
   feedback?: { suggestions: string[]; warning: string };
 
   get passwordComplete() {

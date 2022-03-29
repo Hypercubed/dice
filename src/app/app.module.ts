@@ -49,7 +49,7 @@ import { InstructionsComponent } from './instructions/instructions.component';
     MatExpansionModule,
     ClipboardModule,
     MatCheckboxModule,
-    PasswordStrengthMeterModule
+    PasswordStrengthMeterModule,
   ],
   providers: [
     Location,
