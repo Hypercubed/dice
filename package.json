@@ -4,7 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --ssl --port 8600",
+    "prepwa": "npm run build:prod",
+    "pwa": "http-server -p 8080 -c-1 dist/dice",
     "build": "ng build",
+    "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "watch:test": "ng test",
     "test": "run-s test:*",
@@ -36,6 +39,7 @@
     "@angular/platform-browser": "^13.3.0",
     "@angular/platform-browser-dynamic": "^13.3.0",
     "@angular/router": "^13.3.0",
+    "@angular/service-worker": "^13.3.0",
     "angular-password-strength-meter": "^3.0.1",
     "crypto-js": "^4.1.1",
     "html5-qrcode": "^2.2.0",
