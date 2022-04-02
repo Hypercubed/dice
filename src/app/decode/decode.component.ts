@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -29,7 +35,7 @@ function beep(vol: number, freq: number, duration: number) {
   templateUrl: './decode.component.html',
   styleUrls: ['./decode.component.scss'],
 })
-export class DecodeComponent implements OnInit {
+export class DecodeComponent implements OnInit, OnDestroy {
   hide = true;
 
   password = new FormControl('');
@@ -58,22 +64,20 @@ export class DecodeComponent implements OnInit {
     private readonly location: Location,
     private readonly constantsService: ConstantsService
   ) {}
-  
+
   ngOnInit() {
     this.encoded.valueChanges
       .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
       .subscribe(() => this.decode());
 
-    this.route.params
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => {
-        const param = params['encoded'];
-        if (param && isUrlSafeBase64(param)) {
-          const encoded = decode(params['encoded']);
-          this.encoded.setValue(encoded);
-          this.location.replaceState('decode');
-        }
-      });
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const param = params['encoded'];
+      if (param && isUrlSafeBase64(param)) {
+        const encoded = decode(params['encoded']);
+        this.encoded.setValue(encoded);
+        this.location.replaceState('decode');
+      }
+    });
 
     this.html5QrcodeScanner = new Html5QrcodeScanner(
       'reader',

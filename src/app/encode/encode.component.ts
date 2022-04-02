@@ -117,10 +117,12 @@ export class EncodeComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
       .subscribe((password) => {
         this.confirmPassword.setValue('');
-        const { score, feedback } = this.passwordStrengthMeterService.scoreWithFeedback(password);
+        const { score, feedback } =
+          this.passwordStrengthMeterService.scoreWithFeedback(password);
         this.passwordStrength = scoreText[score];
         this.feedback = feedback;
-        if (!this.feedback?.warning?.endsWith('.')) this.feedback.warning += '.';
+        if (!this.feedback?.warning?.endsWith('.'))
+          this.feedback.warning += '.';
         if (this.feedback?.suggestions?.length) {
           this.feedback?.suggestions.forEach((suggestion) => {
             if (!suggestion.endsWith('.')) suggestion += '.';
@@ -135,7 +137,11 @@ export class EncodeComponent implements OnInit, OnDestroy {
           this.encode(x.message, x.password, x.includeUrl);
         } catch (err: any) {
           this.error = err.message;
-          this.encryptedText = this.encrypted = this.encryptedSvg = this.svg = '';
+          this.encryptedText =
+            this.encrypted =
+            this.encryptedSvg =
+            this.svg =
+              '';
         }
       });
   }
@@ -179,9 +185,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
       const content = includeUrl
         ? Location.joinWithSlash(
             this.constantsService.baseURI,
-            this.location.prepareExternalUrl(
-              'decode/' + encode(this.encrypted)
-            )
+            this.location.prepareExternalUrl('decode/' + encode(this.encrypted))
           )
         : this.encrypted;
       this.svg = this.qrcodeService.base64(content);
