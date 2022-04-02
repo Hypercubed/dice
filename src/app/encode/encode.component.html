@@ -6,17 +6,23 @@
         <mat-panel-title>
           Encryption pass phase
         </mat-panel-title>
-        <!-- <mat-panel-description>
-          <mat-hint *ngIf="!password.value">Enter an pass phase</span>
-          <span class="error" *ngIf="password.value && confirmPassword.value !== password.value">Pass phases must match</span>
-        </mat-panel-description> -->
       </mat-expansion-panel-header>
       <mat-form-field class="full-width main-password" appearance="fill">
         <mat-label>Pass phase</mat-label>
         <input matInput type="password" formControlName="password" />
-        <password-strength-meter [password]="password.value" [minPasswordLength]="0" (strengthChange)="strengthChange($event)" [enableFeedback]="true"></password-strength-meter>
+        <password-strength-meter [password]="password.value" [minPasswordLength]="0" [enableFeedback]="false"></password-strength-meter>
         <mat-hint *ngIf="!password.value">Enter an pass phase</mat-hint>
-        <mat-hint *ngIf="password.value">Pass phase is {{ passwordStrength }}</mat-hint>
+        <mat-hint *ngIf="password.value">
+          Pass phase is {{ passwordStrength }}.
+          <ng-container *ngIf="feedback">
+            <span class="password-feedback" *ngIf="feedback.warning">
+              {{feedback.warning}}
+            </span>
+            <span class="password-suggetion" *ngIf="feedback.suggestions && feedback.suggestions.length > 0">
+              <ng-container *ngFor="let suggestion of feedback.suggestions"> {{suggestion}} </ng-container>
+            </span>
+          </ng-container>
+        </mat-hint>
       </mat-form-field>
       <div>
         &nbsp;

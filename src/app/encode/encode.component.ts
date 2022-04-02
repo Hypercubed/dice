@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -47,9 +47,11 @@ function confirm(password: AbstractControl): ValidatorFn {
 }
 
 @Component({
+  selector: 'app-encode',
   templateUrl: './encode.component.html',
   styleUrls: ['./encode.component.scss'],
   providers: [PasswordStrengthMeterService],
+  encapsulation: ViewEncapsulation.None,
 })
 export class EncodeComponent implements OnInit {
   hide = true;
@@ -98,9 +100,18 @@ export class EncodeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.password.valueChanges.subscribe(() =>
-      this.confirmPassword.setValue('')
-    );
+    this.password.valueChanges.subscribe((password) => {
+      this.confirmPassword.setValue('');
+      const { score, feedback } = this.passwordStrengthMeterService.scoreWithFeedback(password);
+      this.passwordStrength = scoreText[score];
+      this.feedback = feedback;
+      if (!this.feedback?.warning?.endsWith('.')) this.feedback.warning += '.';
+      if (this.feedback?.suggestions?.length) {
+        this.feedback?.suggestions.forEach((suggestion) => {
+          if (!suggestion.endsWith('.')) suggestion += '.';
+        });
+      }
+    });
 
     this.form.valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
@@ -121,10 +132,6 @@ export class EncodeComponent implements OnInit {
           this.encrypted = this.encryptedSvg = this.svg = '';
         }
       });
-  }
-
-  strengthChange(score: number) {
-    this.passwordStrength = scoreText[score];
   }
 
   downloadImage() {

@@ -1,24 +1,38 @@
-.qr {
-  text-align: center;
-}
-
-.result {
-  width: 100%;
-  text-align: center;
-
-  .code {
-    overflow-wrap: break-word;
-    max-width: 90%;
-    margin: 10px auto;
+app-encode {
+  .qr {
+    text-align: center;
   }
-}
 
-.error {
-  color: red;
-  font-weight: bold;
-}
+  .result {
+    width: 100%;
+    text-align: center;
 
-.password-meter {
-  display: block;
-  margin-bottom: 20px;
+    .code {
+      overflow-wrap: break-word;
+      max-width: 90%;
+      margin: 10px auto;
+    }
+  }
+
+  .error {
+    color: red;
+    font-weight: bold;
+  }
+
+  .main-password {
+    password-strength-meter {
+      position: absolute;
+      bottom: -1px;
+      left: -10px;
+      right: -10px;
+  
+      .strength-meter {
+        margin: 0 !important;
+      }
+    }
+
+    .mat-form-field-underline {
+      display: none !important;
+    }
+  }
 }
