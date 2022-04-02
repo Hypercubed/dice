@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EncodeComponent } from './encode.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+import { EncodeComponent } from './encode.component';
 
 describe('EncodeComponent', () => {
   let component: EncodeComponent;
@@ -11,7 +12,7 @@ describe('EncodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatSnackBarModule],
+      imports: [MatSnackBarModule, FormsModule, ReactiveFormsModule],
       declarations: [EncodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
