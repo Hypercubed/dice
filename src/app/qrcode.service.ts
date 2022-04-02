@@ -11,8 +11,8 @@ export class QrcodeService {
 
   svg(content: string): string {
     // fix for Code Length OverFlow Error
-    if(content.length < 218 && content.length > 191) {
-      content += "=".repeat(218-content.length);
+    if (content.length < 218 && content.length > 191) {
+      content += '='.repeat(218 - content.length);
     }
 
     try {
