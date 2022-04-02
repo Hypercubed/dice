@@ -48,7 +48,7 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="result" *ngIf="encoded.value">
-        <div class="decoded" #decodedElm>
+        <div class="result__decoded" #decodedElm>
           {{ decrypted }}
         </div>
         <button type="button" mat-raised-button (click)="another()">

@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Html5QrcodeScanner } from 'html5-qrcode/esm/html5-qrcode-scanner';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { decode, isBase64, isUrlSafeBase64 } from 'url-safe-base64';
 import { ConstantsService } from '../constants.service';
 
 import { CryptoService } from '../crypto.service';
+import { Subject } from 'rxjs';
 
 const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
@@ -49,26 +50,30 @@ export class DecodeComponent implements OnInit {
   @ViewChild('readerElm') readerElm!: ElementRef;
   @ViewChild('passwordElm') passwordElm!: ElementRef;
 
+  private destroy$ = new Subject<boolean>();
+
   constructor(
     private readonly crypto: CryptoService,
     private readonly route: ActivatedRoute,
     private readonly location: Location,
     private readonly constantsService: ConstantsService
   ) {}
-
+  
   ngOnInit() {
     this.encoded.valueChanges
-      .pipe(debounceTime(200), distinctUntilChanged())
+      .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
       .subscribe(() => this.decode());
 
-    this.route.params.subscribe((params) => {
-      const param = params['encoded'];
-      if (param && isUrlSafeBase64(param)) {
-        const encoded = decode(params['encoded']);
-        this.encoded.setValue(encoded);
-        this.location.replaceState('decode');
-      }
-    });
+    this.route.params
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        const param = params['encoded'];
+        if (param && isUrlSafeBase64(param)) {
+          const encoded = decode(params['encoded']);
+          this.encoded.setValue(encoded);
+          this.location.replaceState('decode');
+        }
+      });
 
     this.html5QrcodeScanner = new Html5QrcodeScanner(
       'reader',
@@ -95,6 +100,11 @@ export class DecodeComponent implements OnInit {
         this.fail();
       }
     }, undefined);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   onPasswordChanged() {
