@@ -8,20 +8,11 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-form-field class="full-width main-password" appearance="fill">
-        <mat-label>Pass phase</mat-label>
+        <mat-label>Encryption pass phase</mat-label>
         <input matInput type="password" formControlName="password" />
         <password-strength-meter [password]="password.value" [minPasswordLength]="0" [enableFeedback]="false"></password-strength-meter>
-        <mat-hint *ngIf="!password.value">Enter an pass phase</mat-hint>
-        <mat-hint *ngIf="password.value">
-          Pass phase is {{ passwordStrength }}.
-          <ng-container *ngIf="feedback">
-            <span class="password-feedback" *ngIf="feedback.warning">
-              {{feedback.warning}}
-            </span>
-            <span class="password-suggetion" *ngIf="feedback.suggestions && feedback.suggestions.length > 0">
-              <ng-container *ngFor="let suggestion of feedback.suggestions"> {{suggestion}} </ng-container>
-            </span>
-          </ng-container>
+        <mat-hint>
+          {{ passwordHint$ | async }}
         </mat-hint>
       </mat-form-field>
       <div>
@@ -30,10 +21,10 @@
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Pass phase</mat-label>
         <input matInput type="password" formControlName="confirmPassword" />
-        <mat-hint>Confirm pass phase</mat-hint>
+        <mat-hint>Confirm encryption pass phase</mat-hint>
         <mat-error
           *ngIf="confirmPassword.hasError('notConfirmed')">
-          Password is not the same
+          Pass phase is not the same
         </mat-error>
       </mat-form-field>
     </mat-expansion-panel>
