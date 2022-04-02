@@ -14,13 +14,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
 import { encode } from 'url-safe-base64';
 
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  takeUntil,
+  tap,
+  startWith,
+} from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
+
 import { CryptoService } from '../crypto.service';
-import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
-import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
-import { Observable, of, Subject } from 'rxjs';
-import { startWith } from 'rxjs/operators';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
@@ -115,15 +122,19 @@ export class EncodeComponent implements OnInit, OnDestroy {
       tap(() => {
         this.confirmPassword.setValue('');
       }),
-      map(password => {
+      map((password) => {
         if (!password || !password.trim()) {
           return 'Enter an pass phase';
         }
 
         const { score, feedback } =
-        this.passwordStrengthMeterService.scoreWithFeedback(password);
+          this.passwordStrengthMeterService.scoreWithFeedback(password);
 
-        const hints = [`Pass phase is ${scoreText[score]}`, feedback?.warning, ...feedback?.suggestions].filter(Boolean);
+        const hints = [
+          `Pass phase is ${scoreText[score]}`,
+          feedback?.warning,
+          ...feedback?.suggestions,
+        ].filter(Boolean);
         let passwordStrength = hints
           .map((s) => {
             if (s) {
@@ -131,11 +142,12 @@ export class EncodeComponent implements OnInit, OnDestroy {
               if (s?.endsWith('.')) {
                 return s.replace(/.$/, '');
               }
-              return s;              
+              return s;
             }
             return undefined;
-          }).join('. ');
-        
+          })
+          .join('. ');
+
         if (hints.length > 1) {
           passwordStrength += '.';
         }
