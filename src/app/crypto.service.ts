@@ -6,7 +6,7 @@ import CryptoJS from 'crypto-js';
 const { WordArray } = CryptoJS.lib;
 const { Utf8 } = CryptoJS.enc;
 const { OpenSSL } = CryptoJS.format;
-const { AES } = CryptoJS;
+const { AES, MD5 } = CryptoJS;
 export type WordArray = CryptoJS.lib.WordArray;
 
 const DEBUG = false;
@@ -40,24 +40,28 @@ export class CryptoService {
     return [...pbk, salt];
   }
 
-  encode2(message: string, key: any, iv: any, salt: any) {
+  encode(message: string, password: string) {
     message = (message || '').trim();
+    password = (password || '').trim();
 
+    const phraseHash = this.hash(message);
+
+    const [key, iv, salt] = this.getKey(password);
     DEBUG && console.time('encrypt');
     const cipherParams = AES.encrypt(message, key, { iv });
     DEBUG && console.timeEnd('encrypt');
 
     cipherParams.salt = salt;
 
-    return OpenSSL.stringify(cipherParams);
-  }
+    const encoded = OpenSSL.stringify(cipherParams);
 
-  encode(message: string, password: string) {
-    message = (message || '').trim();
-    password = (password || '').trim();
+    // Integrity check
+    const decrypt = this.decode(encoded, password);
+    if (phraseHash !== this.hash(decrypt)) {
+      throw new Error('Encrypted message failed to decrypt');
+    }
 
-    const [key, iv, salt] = this.getKey(password);
-    return this.encode2(message, key, iv, salt);
+    return encoded;
   }
 
   decode(encrypted: string, password: string) {
@@ -72,6 +76,11 @@ export class CryptoService {
     } catch (_err) {
       return '';
     }
+  }
+
+  hash(message: string) {
+    message = (message || '').trim();
+    return MD5(message).toString();
   }
 
   private pbkdf2(password: string, salt: WordArray): [WordArray, WordArray] {

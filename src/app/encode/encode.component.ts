@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -15,10 +15,11 @@ import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
 import { encode } from 'url-safe-base64';
 
 import { CryptoService } from '../crypto.service';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
 import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
+import { Subject } from 'rxjs';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
@@ -46,6 +47,14 @@ function confirm(password: AbstractControl): ValidatorFn {
   return validator;
 }
 
+function formatString(encrypted: string) {
+  let display = '';
+  for (let i = 0; i < encrypted.length; i += 4) {
+    display += encrypted.substring(i, i + 4) + ' ';
+  }
+  return display;
+}
+
 @Component({
   selector: 'app-encode',
   templateUrl: './encode.component.html',
@@ -53,7 +62,7 @@ function confirm(password: AbstractControl): ValidatorFn {
   providers: [PasswordStrengthMeterService],
   encapsulation: ViewEncapsulation.None,
 })
-export class EncodeComponent implements OnInit {
+export class EncodeComponent implements OnInit, OnDestroy {
   hide = true;
 
   password = new FormControl('');
@@ -81,6 +90,8 @@ export class EncodeComponent implements OnInit {
   encryptedSvg!: SafeResourceUrl;
   passwordStrength = '';
   feedback?: { suggestions: string[]; warning: string };
+  encryptedText: string = '';
+  error: string = '';
 
   get passwordComplete() {
     return (
@@ -88,6 +99,8 @@ export class EncodeComponent implements OnInit {
       this.confirmPassword.value === this.password.value
     );
   }
+
+  private destroy$ = new Subject<boolean>();
 
   constructor(
     public sanitizer: DomSanitizer,
@@ -100,38 +113,36 @@ export class EncodeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.password.valueChanges.subscribe((password) => {
-      this.confirmPassword.setValue('');
-      const { score, feedback } = this.passwordStrengthMeterService.scoreWithFeedback(password);
-      this.passwordStrength = scoreText[score];
-      this.feedback = feedback;
-      if (!this.feedback?.warning?.endsWith('.')) this.feedback.warning += '.';
-      if (this.feedback?.suggestions?.length) {
-        this.feedback?.suggestions.forEach((suggestion) => {
-          if (!suggestion.endsWith('.')) suggestion += '.';
-        });
-      }
-    });
-
-    this.form.valueChanges
-      .pipe(debounceTime(200), distinctUntilChanged())
-      .subscribe((x) => {
-        if (x.message && x.password) {
-          this.encrypted = this.crypto.encode(x.message, x.password);
-          const content = x.includeUrl
-            ? Location.joinWithSlash(
-                this.constantsService.baseURI,
-                this.location.prepareExternalUrl(
-                  'decode/' + encode(this.encrypted)
-                )
-              )
-            : this.encrypted;
-          this.svg = this.qrcodeService.base64(content);
-          this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
-        } else {
-          this.encrypted = this.encryptedSvg = this.svg = '';
+    this.password.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
+      .subscribe((password) => {
+        this.confirmPassword.setValue('');
+        const { score, feedback } = this.passwordStrengthMeterService.scoreWithFeedback(password);
+        this.passwordStrength = scoreText[score];
+        this.feedback = feedback;
+        if (!this.feedback?.warning?.endsWith('.')) this.feedback.warning += '.';
+        if (this.feedback?.suggestions?.length) {
+          this.feedback?.suggestions.forEach((suggestion) => {
+            if (!suggestion.endsWith('.')) suggestion += '.';
+          });
         }
       });
+
+    this.form.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
+      .subscribe((x) => {
+        try {
+          this.encode(x.message, x.password, x.includeUrl);
+        } catch (err: any) {
+          this.error = err.message;
+          this.encryptedText = this.encrypted = this.encryptedSvg = this.svg = '';
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   downloadImage() {
@@ -158,6 +169,26 @@ export class EncodeComponent implements OnInit {
       this.snackBar.open('Image Copied', '', { duration: 1000 });
     } catch (err: any) {
       console.error(err.name, err.message);
+    }
+  }
+
+  private encode(message: string, password: string, includeUrl: boolean) {
+    if (message && password) {
+      this.encrypted = this.crypto.encode(message, password);
+      this.encryptedText = formatString(this.encrypted);
+      const content = includeUrl
+        ? Location.joinWithSlash(
+            this.constantsService.baseURI,
+            this.location.prepareExternalUrl(
+              'decode/' + encode(this.encrypted)
+            )
+          )
+        : this.encrypted;
+      this.svg = this.qrcodeService.base64(content);
+      this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
+      this.error = '';
+    } else {
+      this.encryptedText = this.encrypted = this.encryptedSvg = this.svg = '';
     }
   }
 }

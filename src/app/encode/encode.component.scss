@@ -1,23 +1,46 @@
 app-encode {
-  .qr {
+
+
+  .result-container {
+    width: 100%;
+    display: flex;
+    margin: 10px auto;
+
+    > * {
+      flex: 0 0 50%;
+      margin: 0;
+      padding: 0;
+    }
+
+    &__qr {
+      text-align: center;
+    }
+
+    &__code {
+      max-width: 90%;
+      padding: 40px;
+      font-family: monospace, monospace;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+  }
+  
+  .result-error {
+    width: 1 1 100%;
+    margin: 20px auto;
+    color: red;
     text-align: center;
   }
 
-  .result {
-    width: 100%;
+  .result-controls {
     text-align: center;
 
-    .code {
-      overflow-wrap: break-word;
-      max-width: 90%;
-      margin: 10px auto;
+    > button {
+      margin: 0 10px;
     }
   }
 
-  .error {
-    color: red;
-    font-weight: bold;
-  }
 
   .main-password {
     password-strength-meter {

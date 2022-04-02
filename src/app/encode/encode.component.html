@@ -52,25 +52,35 @@
         <mat-hint>Enter text to encrypt</mat-hint>
       </mat-form-field>
 
+      <div *ngIf="error" class="result-error">
+        Error: {{ error }}
+      </div>
+
       <div *ngIf="encrypted">
-        <div class="result">
-          <mat-checkbox formControlName="includeUrl">Include URL in QR code</mat-checkbox>
-          <div class="qr" (click)="copyImage()">
-            <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+        <div class="result-container">
+          <div class="result-container__qr">
+            <div>
+              <mat-checkbox formControlName="includeUrl">Include URL in QR code</mat-checkbox>
+            </div>
+            <div (click)="copyImage()">
+              <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+            </div>
           </div>
-          <div class="code">
-            {{ encrypted }}
+          <div class="result-container__code">
+            {{ encryptedText }}
           </div>
+        </div>
+        <div class="result-controls">
           <button mat-raised-button (click)="copyImage()">
             Copy QRCode to clipboard
           </button>
-          <button mat-raised-button [cdkCopyToClipboard]="encrypted">
+          <button mat-raised-button [cdkCopyToClipboard]="encryptedText">
             Copy code to clipboard
           </button>
           <button mat-raised-button (click)="downloadImage()">
             Download QR Code
           </button>
-        </div>       
+        </div>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
