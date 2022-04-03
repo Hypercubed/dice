@@ -14,23 +14,25 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
 import { encode } from 'url-safe-base64';
 
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  takeUntil,
+  tap,
+  startWith,
+} from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
+
 import { CryptoService } from '../crypto.service';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
-import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
-import { Subject } from 'rxjs';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
 
 const scoreText = ['very weak', 'weak', 'better', 'medium', 'strong'];
-
-function isUndefinedOrEmpty(control: AbstractControl): any | undefined {
-  if (!control || !control.value || control.value.length === 0) {
-    return undefined;
-  }
-}
 
 function confirm(password: AbstractControl): ValidatorFn {
   const validator = (control: AbstractControl): any | undefined => {
@@ -88,8 +90,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
   svg = '';
   blob: any;
   encryptedSvg!: SafeResourceUrl;
-  passwordStrength = '';
-  feedback?: { suggestions: string[]; warning: string };
+  passwordHint$ = of('Enter an pass phase');
   encryptedText: string = '';
   error: string = '';
 
@@ -113,22 +114,47 @@ export class EncodeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.password.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
-      .subscribe((password) => {
+    this.passwordHint$ = this.password.valueChanges.pipe(
+      startWith(''),
+      takeUntil(this.destroy$),
+      debounceTime(200),
+      distinctUntilChanged(),
+      tap(() => {
         this.confirmPassword.setValue('');
+      }),
+      map((password) => {
+        if (!password || !password.trim()) {
+          return 'Enter an pass phase';
+        }
+
         const { score, feedback } =
           this.passwordStrengthMeterService.scoreWithFeedback(password);
-        this.passwordStrength = scoreText[score];
-        this.feedback = feedback;
-        if (!this.feedback?.warning?.endsWith('.'))
-          this.feedback.warning += '.';
-        if (this.feedback?.suggestions?.length) {
-          this.feedback?.suggestions.forEach((suggestion) => {
-            if (!suggestion.endsWith('.')) suggestion += '.';
-          });
+
+        const hints = [
+          `Pass phase is ${scoreText[score]}`,
+          feedback?.warning,
+          ...feedback?.suggestions,
+        ].filter(Boolean);
+        let passwordStrength = hints
+          .map((s) => {
+            if (s) {
+              s = s.trim();
+              if (s?.endsWith('.')) {
+                return s.replace(/.$/, '');
+              }
+              return s;
+            }
+            return undefined;
+          })
+          .join('. ');
+
+        if (hints.length > 1) {
+          passwordStrength += '.';
         }
-      });
+
+        return passwordStrength;
+      })
+    );
 
     this.form.valueChanges
       .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())

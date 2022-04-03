@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { DecodeComponent } from './decode.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+import { DecodeComponent } from './decode.component';
 
 describe('DecodeComponent', () => {
   let component: DecodeComponent;
@@ -14,7 +15,12 @@ describe('DecodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatToolbarModule, MatSnackBarModule],
+      imports: [
+        MatToolbarModule,
+        MatSnackBarModule,
+        FormsModule,
+        ReactiveFormsModule,
+      ],
       declarations: [DecodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
