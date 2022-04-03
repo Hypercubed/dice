@@ -1,8 +1,8 @@
 {
-  "name": "dice",
-  "short_name": "dice",
-  "theme_color": "#e70000",
-  "background_color": "#e70000",
+  "name": "DICE",
+  "short_name": "DICE",
+  "theme_color": "#E40613",
+  "background_color": "#E71F2B",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
