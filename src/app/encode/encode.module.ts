@@ -19,14 +19,12 @@ import { MatIconModule } from '@angular/material/icon';
 const routes: Routes = [
   {
     path: '',
-    component: EncodeComponent
-  }
+    component: EncodeComponent,
+  },
 ];
 
 @NgModule({
-  declarations: [
-    EncodeComponent,
-  ],
+  declarations: [EncodeComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
@@ -43,6 +41,6 @@ const routes: Routes = [
     MatSnackBarModule,
     MatExpansionModule,
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppEncodeModule {}

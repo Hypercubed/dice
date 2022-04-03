@@ -22,10 +22,7 @@ import { AppEncodeModule } from './encode/encode.module';
 import { AppDecodeModule } from './decode/decode.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    InstructionsComponent,
-  ],
+  declarations: [AppComponent, InstructionsComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -40,7 +37,7 @@ import { AppDecodeModule } from './decode/decode.module';
       registrationStrategy: 'registerWhenStable:30000',
     }),
     AppEncodeModule,
-    AppDecodeModule
+    AppDecodeModule,
   ],
   providers: [
     Location,
