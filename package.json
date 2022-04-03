@@ -21,7 +21,7 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint \"src/**/*.{js,ts}\" --ext .ts --fix",
-    "precommit": "npm run fix",
+    "precommit": "pretty-quick --staged",
     "audit": "run-s audit:*",
     "audit:npm": "npm audit --omit dev",
     "audit:npm-check": "npm-check --skip-unused || true",
