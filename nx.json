@@ -1,0 +1,20 @@
+{
+  "npmScope": "dice",
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    "tsconfig.json": "*",
+    ".eslintrc.json": "*"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "accessToken": "NGU1MmY5MjYtYzAwYS00NjMyLWIzOTktYTJmN2M3NzhhMGExfHJlYWQtd3JpdGU="
+      }
+    }
+  }
+}
