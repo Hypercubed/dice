@@ -14,7 +14,7 @@
     "test:lint": "nx lint",
     "test:unit": "nx test --browsers=Headless --no-watch",
     "predeploy": "npm run build && node ./move-version.js",
-    "deploy": "ng deploy --no-build --dry-run",
+    "deploy": "ng deploy --no-build",
     "lint": "nx lint",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
