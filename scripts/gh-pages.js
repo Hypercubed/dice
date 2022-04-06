@@ -1,6 +1,5 @@
 const path = require('path');
 const engine = require('angular-cli-ghpages/engine/engine');
-const angularConfig = require('../angular.json');
 
 const consoleLogger = {
   createChild: () => consoleLogger,
