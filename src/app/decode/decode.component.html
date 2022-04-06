@@ -1,50 +1,61 @@
 <form [formGroup]="form">
-
   <mat-accordion>
-
-    <mat-expansion-panel [expanded]="!passwordComplete && !decrypted">
+    <mat-expansion-panel [expanded]="!passwordConfirmed && !decrypted">
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Encryption pass phase
-        </mat-panel-title>
+        <mat-panel-title> Encryption pass phase </mat-panel-title>
         <mat-panel-description>
-          <span *ngIf="!passwordComplete">Enter an encryption pass phase</span>
+          <span *ngIf="!passwordConfirmed">Enter an encryption pass phase</span>
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Encryption pass phase</mat-label>
-        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" (change)="onPasswordChanged()" />
-        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+        />
+        <mat-icon matSuffix (click)="hide = !hide">{{
+          hide ? 'visibility_off' : 'visibility'
+        }}</mat-icon>
       </mat-form-field>
-      <button type="button" mat-raised-button (click)="onPasswordOk()">
+      <button
+        type="button"
+        mat-raised-button
+        (click)="onPasswordOk()"
+        [disabled]="!password.value || passwordConfirmed"
+      >
         OK
       </button>
     </mat-expansion-panel>
 
-    <mat-expansion-panel [expanded]="passwordComplete && !decrypted">
+    <mat-expansion-panel [expanded]="passwordConfirmed && !decrypted">
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Encrypted string
-        </mat-panel-title>
+        <mat-panel-title> Encrypted string </mat-panel-title>
         <mat-panel-description>
-          <span *ngIf="!encoded.value">Enter encrypted text or scan QR code</span>
+          <span *ngIf="!encoded.value"
+            >Enter encrypted text or scan QR code</span
+          >
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div id="reader" width="600px" #readerElm></div>
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to decrypt</mat-label>
         <textarea matInput formControlName="encoded"></textarea>
-      </mat-form-field> 
+      </mat-form-field>
     </mat-expansion-panel>
 
-    <mat-expansion-panel class="result-panel" [expanded]="decryptionSuccess" [disabled]="!passwordComplete || !decryptionSuccess">
+    <mat-expansion-panel
+      class="result-panel"
+      [expanded]="decryptionSuccess"
+      [disabled]="!passwordConfirmed || !decryptionSuccess"
+    >
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Result 
-        </mat-panel-title>
+        <mat-panel-title> Result </mat-panel-title>
         <mat-panel-description>
-          <i *ngIf="!passwordComplete">Confirm Password</i>
-          <i *ngIf="passwordComplete && !decryptionSuccess">Decryption Failed.  Check pass phase or encrypted text</i>
+          <i *ngIf="!passwordConfirmed">Confirm Password</i>
+          <i *ngIf="passwordConfirmed && !decryptionSuccess"
+            >Decryption Failed. Check pass phase or encrypted text</i
+          >
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="result" *ngIf="encoded.value">
@@ -58,10 +69,17 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <mat-card class="example-card" *ngIf="!!decrypted">
-    <mat-card-title>The decryption process is the same as the <a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a>:</mat-card-title>
+  <mat-card class="example-card">
+    <mat-card-title
+      >The decryption process is the same as the
+      <a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a
+      >:</mat-card-title
+    >
     <mat-card-content>
-      <code>echo -n "{{encoded.value}}" | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2</code>
+      <code
+        >echo -n "{{ base64Encoded$ | async }}" | openssl enc -d -aes-256-cbc -A
+        -base64 -pbkdf2</code
+      >
     </mat-card-content>
   </mat-card>
 </form>

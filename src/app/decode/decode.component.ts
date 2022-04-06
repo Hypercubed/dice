@@ -10,12 +10,21 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Html5QrcodeScanner } from 'html5-qrcode/esm/html5-qrcode-scanner';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { decode, isBase64, isUrlSafeBase64 } from 'url-safe-base64';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  takeUntil,
+} from 'rxjs/operators';
+import {
+  decode as decodeSafeBase64,
+  isBase64,
+  isUrlSafeBase64,
+} from 'url-safe-base64';
 import { ConstantsService } from '../constants.service';
 
 import { CryptoService } from '../crypto.service';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
@@ -48,13 +57,15 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   decrypted = '';
   decryptionSuccess = false;
-  passwordComplete = false;
+  passwordConfirmed = false;
 
   html5QrcodeScanner!: Html5QrcodeScanner;
 
   @ViewChild('decodedElm') decodedElm!: ElementRef;
   @ViewChild('readerElm') readerElm!: ElementRef;
   @ViewChild('passwordElm') passwordElm!: ElementRef;
+
+  base64Encoded$ = of('');
 
   private destroy$ = new Subject<boolean>();
 
@@ -66,16 +77,28 @@ export class DecodeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.encoded.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(200), distinctUntilChanged())
-      .subscribe(() => this.decode());
+    this.base64Encoded$ = this.encoded.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(200),
+      map((encoded) => {
+        if (encoded.includes('http')) {
+          const segments = encoded.split('/');
+          encoded = segments[segments.length - 1];
+        }
+        encoded = decodeSafeBase64(encoded);
+        return encoded.replace(/\s/g, '');
+      })
+    );
 
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const param = params['encoded'];
-      if (param && isUrlSafeBase64(param)) {
-        const encoded = decode(params['encoded']);
-        this.encoded.setValue(encoded);
-        this.location.replaceState('decode');
+    this.password.valueChanges.subscribe(() => {
+      this.passwordConfirmed = false;
+      this.decryptionSuccess = false;
+      this.decrypted = '';
+    });
+
+    this.base64Encoded$.pipe(distinctUntilChanged()).subscribe((encoded) => {
+      if (this.passwordConfirmed) {
+        this.decode(encoded, this.password.value);
       }
     });
 
@@ -84,26 +107,39 @@ export class DecodeComponent implements OnInit, OnDestroy {
       { fps: 10, qrbox: 150 },
       false
     );
+
     this.html5QrcodeScanner.render((encoded) => {
       if (encoded.includes('http')) {
         const segments = encoded.split('/');
-        encoded = decode(segments[segments.length - 1]);
+        encoded = decodeSafeBase64(segments[segments.length - 1]);
       }
       if (isBase64(encoded)) {
         if (encoded !== this.encoded.value) {
           this.encoded.setValue(encoded);
-          this.decrypted = this.crypto.decode(encoded, this.password.value);
-          if (this.decrypted) {
+          if (
+            this.passwordConfirmed &&
+            this.decode(this.encoded.value, this.password.value)
+          ) {
             this.decodedElm.nativeElement.scrollIntoView();
           } else {
             this.passwordElm.nativeElement.scrollIntoView();
-            this.fail();
           }
         }
       } else {
         this.fail();
       }
     }, undefined);
+
+    setTimeout(() => {
+      this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+        const param = params['encoded'];
+        if (param && isUrlSafeBase64(param)) {
+          const encoded = decodeSafeBase64(params['encoded']);
+          this.encoded.setValue(encoded);
+          this.location.replaceState('decode');
+        }
+      });
+    });
   }
 
   ngOnDestroy() {
@@ -111,14 +147,9 @@ export class DecodeComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  onPasswordChanged() {
-    this.passwordComplete = false;
-    this.decode();
-  }
-
   onPasswordOk() {
-    this.passwordComplete = true;
-    this.decode();
+    this.passwordConfirmed = true;
+    this.decode(this.encoded.value, this.password.value);
   }
 
   another() {
@@ -126,13 +157,10 @@ export class DecodeComponent implements OnInit, OnDestroy {
     this.decrypted = '';
   }
 
-  decode() {
-    if (this.passwordComplete) {
-      const x = this.form.value;
+  private decode(encoded: string, password: string) {
+    if (this.passwordConfirmed) {
       this.decrypted =
-        x.encoded && x.password
-          ? this.crypto.decode(x.encoded, x.password)
-          : '';
+        encoded && password ? this.crypto.decode(encoded, password) : '';
       if (this.decrypted) {
         this.success();
       } else {
@@ -142,6 +170,7 @@ export class DecodeComponent implements OnInit, OnDestroy {
       this.decryptionSuccess = false;
       this.decrypted = '';
     }
+    return this.decryptionSuccess;
   }
 
   private success() {
