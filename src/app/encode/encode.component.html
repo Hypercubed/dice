@@ -1,41 +1,39 @@
 <form [formGroup]="form">
-
   <mat-accordion>
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Encryption pass phase
-        </mat-panel-title>
+        <mat-panel-title> Encryption pass phase </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-form-field class="full-width main-password" appearance="fill">
         <mat-label>Encryption pass phase</mat-label>
         <input matInput type="password" formControlName="password" />
-        <password-strength-meter [password]="password.value" [minPasswordLength]="0" [enableFeedback]="false"></password-strength-meter>
+        <password-strength-meter
+          [password]="password.value"
+          [minPasswordLength]="0"
+          [enableFeedback]="false"
+        ></password-strength-meter>
         <mat-hint>
           {{ passwordHint$ | async }}
         </mat-hint>
       </mat-form-field>
-      <div>
-        &nbsp;
-      </div>
+      <div>&nbsp;</div>
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Confirm Pass phase</mat-label>
         <input matInput type="password" formControlName="confirmPassword" />
         <mat-hint>Confirm encryption pass phase</mat-hint>
-        <mat-error
-          *ngIf="confirmPassword.hasError('notConfirmed')">
+        <mat-error *ngIf="confirmPassword.hasError('notConfirmed')">
           Pass phase is not the same
         </mat-error>
       </mat-form-field>
     </mat-expansion-panel>
-    
-    <mat-expansion-panel [expanded]="passwordComplete" [disabled]="!passwordComplete">
+
+    <mat-expansion-panel
+      [expanded]="passwordComplete"
+      [disabled]="!passwordComplete"
+    >
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Text to encrypt
-        </mat-panel-title>
-        <mat-panel-description>
-        </mat-panel-description>
+        <mat-panel-title> Text to encrypt </mat-panel-title>
+        <mat-panel-description> </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to encrypt</mat-label>
@@ -43,15 +41,15 @@
         <mat-hint>Enter text to encrypt</mat-hint>
       </mat-form-field>
 
-      <div *ngIf="error" class="result-error">
-        Error: {{ error }}
-      </div>
+      <div *ngIf="error" class="result-error">Error: {{ error }}</div>
 
       <div *ngIf="encrypted">
         <div class="result-container">
           <div class="result-container__qr">
             <div>
-              <mat-checkbox formControlName="includeUrl">Include URL in QR code</mat-checkbox>
+              <mat-checkbox formControlName="includeUrl"
+                >Include URL in QR code</mat-checkbox
+              >
             </div>
             <div (click)="copyImage()">
               <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
@@ -77,9 +75,16 @@
   </mat-accordion>
 
   <mat-card class="example-card" *ngIf="message.value">
+    <mat-card-title
+      >The decryption process is the same as the
+      <a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a
+      >:</mat-card-title
+    >
     <mat-card-content>
-      <p>The encryption process is the same as the <a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a>:</p>
-      <code>echo -n "{{message.value}}" | openssl enc -e -aes-256-cbc - -base64 -pbkdf2</code>
+      <code
+        >echo -n "{{ message.value }}" | openssl enc -e -aes-256-cbc -base64 -A
+        -pbkdf2</code
+      >
     </mat-card-content>
   </mat-card>
 </form>

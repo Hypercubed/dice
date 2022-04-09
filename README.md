@@ -2,11 +2,11 @@
 
 Decode in case of Emergency (DICE) is a simple online and open-source tool to convert confidential messages into encrypted QRCodes to be shared with your loved ones and decoded in case of emergency.
 
-Messages are encoded using an encryption password and aes-256-cbc encryption, the same as the one used in the [OpenSSL cli tool](https://wiki.openssl.org/index.php/Command_Line_Utilities).  All encryption and decryption happens within the browser and never sent to any server.  Feel free to deploy your own server for this tool but don't worry messages can always be decrypted using the OpenSSL cli tool.
+Messages are encoded using an encryption password and aes-256-cbc encryption, the same as the one used in the [OpenSSL cli tool](https://wiki.openssl.org/index.php/Command_Line_Utilities). All encryption and decryption happens within the browser and never sent to any server. Feel free to deploy your own server for this tool but don't worry messages can always be decrypted using the OpenSSL cli tool.
 
 ## How to use
 
-DICE is designed to be easily deployed to any static hosting sites.  Feel free to clone and deploy DICE to your own site or use one of the following deployments:
+DICE is designed to be easily deployed to any static hosting sites. Feel free to clone and deploy DICE to your own site or use one of the following deployments:
 
 ### Auto-deployed from this repo
 
@@ -24,25 +24,46 @@ DICE is designed to be easily deployed to any static hosting sites.  Feel free t
 - https://gateway.pinata.cloud/ipfs/QmboFxoGxf3PSkYASZ2X56Pwv6quKrcW6sdoCdqVRgSMeX/#/
 - https://hypercubed.itch.io/dice
 
+### Encoding Method
+
+Text is encrypted using AES (with PBKDF2, CBC block and random IV) then base64 encoded using the same method used by `openssl`. `openssl` Encryption and decryption command lines are shown below. The QR code is generated from the url safe base64 encoded encrypted text and the current application url (optionally disabled).
+
+Examples:
+
+```sh
+> echo "secret message" | openssl enc -e -aes-256-cbc -base64 -A -pbkdf2
+enter aes-256-cbc encryption password:
+Verifying - enter aes-256-cbc encryption password:
+U2FsdGVkX1+YgsU2eR8IuwEu8vBpQY6cvTU5jcx66Fc=
+
+> echo -n "U2FsdGVkX1+YgsU2eR8IuwEu8vBpQY6cvTU5jcx66Fc=" | openssl enc -d -aes-256-cbc -base64 -A -pbkdf2
+enter aes-256-cbc decryption password:
+secret message
+```
+
+> **Note:** The `openssl` command on MacOS may point to LibreSSL. If so you may need to install OpenSSL.
+
+> **Note:** The `echo` command on Windows/DOS may look a little different. Try removing the `-n` flag and quotes.
+
 ### Encoding
 
-1. Enter an encryption password.  This pass phase is shared with your intended recipient(s).
+1. Enter an encryption password. This pass phase is shared with your intended recipient(s).
 
-2. Enter text to encrypt.  The text will be encrypted using the encryption password you entered.
+2. Enter text to encrypt. The text will be encrypted using the encryption password you entered.
 
-3. Download QR Code or encrypted text.  This is the QR code you can embed in your document and store for an emergency.
+3. Download QR Code or encrypted text. This is the QR code you can embed in your document and store for an emergency.
 
-> **Using OpenSSL:** `echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc - -base64 -pbkdf2`
+> **Using OpenSSL:** `echo "{{secret message}}" | openssl enc -e -aes-256-cbc -base64 -pbkdf2`
 
 ### Decoding
 
-1. Enter an encryption password.  This password that was shared with your.
+1. Enter an encryption password. This password that was shared with your.
 
-2. Scan the QR code or enter the encrypted text.  The text will be decrypted using the encryption password you entered.
+2. Scan the QR code or enter the encrypted text. The text will be decrypted using the encryption password you entered.
 
 3. Decrypted Text is displayed.
 
-> **Using OpenSSL:** `echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2`
+> **Using OpenSSL:** `echo "{{encrypted message}}" | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2`
 
 ## License
 
