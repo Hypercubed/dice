@@ -1,45 +1,102 @@
-<p><b>D</b>ecode <b>I</b>n <b>C</b>ase of <b>E</b>mergency (DICE) is a simple online and open-source tool to convert confidential messages into encrypted QRCodes to be shared with your loved ones and decoded in case of emergency (or for any reason whatsoever).</p>
+<p>
+  <b>D</b>ecode <b>I</b>n <b>C</b>ase of <b>E</b>mergency (DICE) is a simple
+  online and open-source tool to convert confidential messages into encrypted
+  QRCodes to be shared with your loved ones and decoded in case of emergency (or
+  for any reason whatsoever).
+</p>
 
-<p>Messages are encoded using an encryption pass phase and aes-256-cbc encryption,
-  the same as the one used in the <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a> (tested with OpenSSL v1.1).  All encryption and decryption happens within the browser and never sent to any server.  Feel free to deploy your own site for this tool; and don&#39;t worry messages can always be decrypted using the OpenSSL CLI tool as well.</p>
+<p>
+  Messages are encoded using an encryption pass phase and aes-256-cbc
+  encryption, the same as the one used in the
+  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
+    >OpenSSL cli tool</a
+  >
+  (tested with OpenSSL v1.1). All encryption and decryption happens within the
+  browser and never sent to any server. Feel free to deploy your own site for
+  this tool; and don&#39;t worry messages can always be decrypted using the
+  OpenSSL CLI tool as well.
+</p>
 
 <h2 id="how-to-use-dice">How to use Dice</h2>
 <h3 id="encoding">
   <a routerLink="encode" routerLinkActive="mat-accent">Encoding</a>
 </h3>
 <ol>
-<li><p>Enter an encryption pass phase.  This pass phase is shared with your intended recipient(s).  This pass phase cannot be recovered.</p>
-</li>
-<li><p>Enter text to encrypt.  The text will be encrypted using the encryption pass phase you entered.  The text is encrypted with aes-256-cbc encryption, the same as the one used in the <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a>.</p>
-</li>
-<li><p>Download QR Code or encrypted text.  This QR code can be embedded in a document, printed and stored in case of emergency.  The QR code data includes the encrypted text as well as a link to this site.</p>
-</li>
+  <li>
+    <p>
+      Enter an encryption pass phase. This pass phase is shared with your
+      intended recipient(s). This pass phase cannot be recovered.
+    </p>
+  </li>
+  <li>
+    <p>
+      Enter text to encrypt. The text will be encrypted using the encryption
+      pass phase you entered. The text is encrypted with aes-256-cbc encryption,
+      the same as the one used in the
+      <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
+        >OpenSSL cli tool</a
+      >.
+    </p>
+  </li>
+  <li>
+    <p>
+      Download QR Code or encrypted text. This QR code can be embedded in a
+      document, printed and stored in case of emergency. The QR code data
+      includes the encrypted text as well as a link to this site.
+    </p>
+  </li>
 </ol>
 <blockquote>
-<p><strong>Using OpenSSL: </strong> <code ngNonBindable>echo -n &quot;{{secret message}}&quot; | openssl enc -e -aes-256-cbc - -base64 -pbkdf2</code></p>
+  <p>
+    <strong>Using OpenSSL: </strong>
+    <code ngNonBindable
+      >echo -n &quot;{{secret message}}&quot; | openssl enc -e -aes-256-cbc -
+      -base64 -pbkdf2</code
+    >
+  </p>
 </blockquote>
 
 <h3 id="decoding">
   <a routerLink="decode" routerLinkActive="mat-accent">Decoding</a>
 </h3>
 <ol>
-<li><p>Enter an encryption pass phase.  This pass phase that was shared with you.</p>
-</li>
-<li><p>Scan the QR code or enter the encrypted text.  If you arrived at this site by scanning a QRcode this will be populated already.  The text will be decrypted using the encryption pass phase you entered.</p>
-</li>
-<li><p>Decrypted Text is displayed.</p>
-</li>
+  <li>
+    <p>
+      Enter an encryption pass phase. This pass phase that was shared with you.
+    </p>
+  </li>
+  <li>
+    <p>
+      Scan the QR code or enter the encrypted text. If you arrived at this site
+      by scanning a QRcode this will be populated already. The text will be
+      decrypted using the encryption pass phase you entered.
+    </p>
+  </li>
+  <li><p>Decrypted Text is displayed.</p></li>
 </ol>
 <blockquote>
-<p><strong>Using OpenSSL: </strong> <code ngNonBindable>echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2</code></p>
+  <p>
+    <strong>Using OpenSSL: </strong>
+    <code ngNonBindable
+      >echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc
+      -A -base64 -pbkdf2</code
+    >
+  </p>
 </blockquote>
 
 <div id="section-to-print">
-  <h2>How to Use dice</h2> 
+  <h2>How to Use dice</h2>
 
-  The QR codes below can be decrypted using DICE or using the following OpenSSL command:
+  The QR codes below can be decrypted using DICE or using the following OpenSSL
+  command:
   <blockquote>
-    <p><strong>Using OpenSSL: </strong> <code ngNonBindable>echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2</code></p>
+    <p>
+      <strong>Using OpenSSL: </strong>
+      <code ngNonBindable
+        >echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc
+        -A -base64 -pbkdf2</code
+      >
+    </p>
   </blockquote>
 
   <p><img [attr.src]="pageSvg" [attr.alt]="url" /></p>

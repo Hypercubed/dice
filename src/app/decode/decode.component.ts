@@ -5,7 +5,12 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  NgForm,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -25,6 +30,10 @@ import { ConstantsService } from '../constants.service';
 
 import { CryptoService } from '../crypto.service';
 import { of, Subject } from 'rxjs';
+import {
+  ErrorStateMatcher,
+  ShowOnDirtyErrorStateMatcher,
+} from '@angular/material/core';
 
 const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
@@ -43,6 +52,9 @@ function beep(vol: number, freq: number, duration: number) {
 @Component({
   templateUrl: './decode.component.html',
   styleUrls: ['./decode.component.scss'],
+  providers: [
+    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
+  ],
 })
 export class DecodeComponent implements OnInit, OnDestroy {
   hide = true;
@@ -85,8 +97,20 @@ export class DecodeComponent implements OnInit, OnDestroy {
           const segments = encoded.split('/');
           encoded = segments[segments.length - 1];
         }
-        encoded = decodeSafeBase64(encoded);
-        return encoded.replace(/\s/g, '');
+        encoded = decodeSafeBase64(encoded).replace(/\s/g, '');
+
+        const invalid = !isBase64(encoded);
+        const invalidFormat = !encoded.startsWith('U2FsdGVkX18');
+
+        this.encoded.setErrors(
+          invalid || invalidFormat
+            ? {
+                invalid: !isBase64(encoded),
+                invalidFormat: !encoded.startsWith('U2FsdGVkX18'),
+              }
+            : null
+        );
+        return encoded;
       })
     );
 
@@ -96,11 +120,13 @@ export class DecodeComponent implements OnInit, OnDestroy {
       this.decrypted = '';
     });
 
-    this.base64Encoded$.pipe(distinctUntilChanged()).subscribe((encoded) => {
-      if (this.passwordConfirmed) {
-        this.decode(encoded, this.password.value);
-      }
-    });
+    this.base64Encoded$
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe((encoded) => {
+        if (this.passwordConfirmed) {
+          this.decode(encoded, this.password.value);
+        }
+      });
 
     this.html5QrcodeScanner = new Html5QrcodeScanner(
       'reader',

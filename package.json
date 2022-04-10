@@ -17,7 +17,7 @@
     "deploy": "node ./scripts/deploy-version.js",
     "lint": "nx lint",
     "fix": "run-s fix:*",
-    "fix:prettier": "prettier \"src/**/*.ts\" --write",
+    "fix:prettier": "prettier \"src/**/*.{js,ts,html}\" --write",
     "fix:lint": "eslint \"src/**/*.{js,ts}\" --ext .ts --fix",
     "precommit": "pretty-quick --staged",
     "audit": "run-s audit:*",
