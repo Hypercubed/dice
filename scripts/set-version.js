@@ -25,9 +25,17 @@ try {
   }
 }
 
-const content = `<meta http-equiv="refresh" content="0; URL=./${version}/" />\n`;
+const html = ` <html xmlns="http://www.w3.org/1999/xhtml">    
+<head>      
+  <title>DICE</title>      
+  <meta http-equiv="refresh" content="0; URL=./${version}/" />   
+</head>    
+<body> 
+  <p>If you are not redirected in five seconds, <a href="./${version}/">click here</a>.</p> 
+</body>  
+</html> `;
 
-fs.writeFileSync(join(target, 'index.html'), content);
+fs.writeFileSync(join(target, 'index.html'), html);
 
 run({
   dir,
