@@ -1,8 +1,7 @@
 <p>
   <b>D</b>ecode <b>I</b>n <b>C</b>ase of <b>E</b>mergency (DICE) is a simple
   online and open-source tool to convert confidential messages into encrypted
-  QRCodes to be shared with your loved ones and decoded in case of emergency (or
-  for any reason whatsoever).
+  QRCodes to be decoded in case of emergency (or for any reason whatsoever).
 </p>
 
 <p>
@@ -12,92 +11,214 @@
     >OpenSSL cli tool</a
   >
   (tested with OpenSSL v1.1). All encryption and decryption happens within the
-  browser and never sent to any server. Feel free to deploy your own site for
-  this tool; and don&#39;t worry messages can always be decrypted using the
-  OpenSSL CLI tool as well.
+  browser and never sent to any server. DICE is free and
+  <a href="https://github.com/Hypercubed/dice">open source</a>. Feel free to
+  deploy your own site for this tool; messages can always be decrypted using the
+  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
+    >OpenSSL cli tool</a
+  >
+  as well.
 </p>
 
-<h2 id="how-to-use-dice">How to use Dice</h2>
-<h3 id="encoding">
-  <a routerLink="encode" routerLinkActive="mat-accent">Encoding</a>
-</h3>
-<ol>
-  <li>
+<h1 class="app-instructions__headline">How to encrypt</h1>
+
+<div class="app-instructions__steps">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">1</span></mat-card-title>
+      <mat-card-title>Pass phase</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        This pass phase is kept secret or shared with your intended
+        recipient(s). Use long passwords and keep it safe. This pass phase
+        cannot be recovered.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">2</span></mat-card-title>
+      <mat-card-title>Message</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        The text will be encrypted using the encryption pass phase you entered.
+        The text is encrypted with aes-256-cbc encryption, the same as the one
+        used in the
+        <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
+          >OpenSSL cli tool</a
+        >.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">3</span></mat-card-title>
+      <mat-card-title>Download</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        Copy or download the encrypted text and/or QR Code. These can be
+        embedded in a document, printed and stored in case of emergency. The QR
+        code data includes the encrypted text as well as a link to this site.
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<h1 class="app-instructions__headline">How to decrypt</h1>
+
+<div class="app-instructions__steps">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">1</span></mat-card-title>
+      <mat-card-title>Pass phase</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        This is your secret pass phase or one shared with you. Press OK when
+        ready.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">2</span></mat-card-title>
+      <mat-card-title>Encrypted text</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        Scan the QR code or enter the encrypted text. If you arrived at this
+        site by scanning a QRcode this will be populated already.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title><span class="step-tag">3</span></mat-card-title>
+      <mat-card-title>Decrypted text</mat-card-title>
+    </mat-card-header>
+    <mat-divider inset="true"></mat-divider>
+    <mat-card-content>
+      <p>
+        The text will be decrypted using the encryption pass phase you entered.
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<h1 class="app-instructions__headline">FAQ</h1>
+
+<mat-accordion class="app-instructions__faq">
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title> Why should I use DICE? </mat-panel-title>
+    </mat-expansion-panel-header>
     <p>
-      Enter an encryption pass phase. This pass phase is shared with your
-      intended recipient(s). This pass phase cannot be recovered.
+      DICE is free and open source. No software or installation is required. You
+      can encrypt any text quickly using your own secret pass phase. After the
+      encryption is done, your message will be unreadable without the pass
+      phase. The encryption algorithm is run in the browser. No data is sent or
+      logged. All messages are encrypted using 256-bit AES.
     </p>
-  </li>
-  <li>
+    <p>Use this service when you want to...</p>
+    <ul>
+      <li>Send your sensitive messages to your friends or family.</li>
+      <li>Safely encode sensitive information for storage online.</li>
+      <li>
+        Safely backup sensitive information to paper for use by yourself or a
+        trusted third party in case of emergency.
+      </li>
+    </ul>
+    <br />
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Where are the encrypted messages stored?
+      </mat-panel-title>
+    </mat-expansion-panel-header>
     <p>
-      Enter text to encrypt. The text will be encrypted using the encryption
-      pass phase you entered. The text is encrypted with aes-256-cbc encryption,
-      the same as the one used in the
+      They are not stored by this site at all. If you would like to store the
+      encrypted text or QR codes you will need to copy them to a document for
+      storage or printing.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title> How safe is DICE? </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      All messages are encrypted using
+      <a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
+        >AES</a
+      >
+      with a 256-bit key length, (trusted by governments and corporations all
+      over the world) along with well known key derivation function
+      <a href="http://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. For the highest
+      level of security use a strong pass phase. Feel free to deploy your own
+      server for this tool or use the OpenSSL cli tool.
+    </p>
+    <p>We do not store any data about your message or encryption pass phase.</p>
+    <p>
+      We believe this service is safe; however all use is completely at your own
+      risk.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Can I retrieve a forgotten pass phase?
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      Nope. Pass phases and messages never leave your browser. There is no
+      backup unless you made it yourself. If you've forgotten, it's gone for
+      good.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title> Where can I find the source code? </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      All code is open-source on
+      <a href="https://github.com/Hypercubed/dice">GitHub</a>.
+    </p>
+  </mat-expansion-panel>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title> What if this site is shut down? </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>
+      Messages are encrypted and encoded in the same format as
       <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
         >OpenSSL cli tool</a
       >.
     </p>
-  </li>
-  <li>
     <p>
-      Download QR Code or encrypted text. This QR code can be embedded in a
-      document, printed and stored in case of emergency. The QR code data
-      includes the encrypted text as well as a link to this site.
+      <strong>Use OpenSSL to encode: </strong>
+      <code ngNonBindable
+        >echo -n "{{secret message}}"" | openssl enc -e -aes-256-cbc -base64 -A
+        -pbkdf2</code
+      >
     </p>
-  </li>
-</ol>
-<blockquote>
-  <p>
-    <strong>Using OpenSSL: </strong>
-    <code ngNonBindable
-      >echo -n &quot;{{secret message}}&quot; | openssl enc -e -aes-256-cbc -
-      -base64 -pbkdf2</code
-    >
-  </p>
-</blockquote>
-
-<h3 id="decoding">
-  <a routerLink="decode" routerLinkActive="mat-accent">Decoding</a>
-</h3>
-<ol>
-  <li>
     <p>
-      Enter an encryption pass phase. This pass phase that was shared with you.
-    </p>
-  </li>
-  <li>
-    <p>
-      Scan the QR code or enter the encrypted text. If you arrived at this site
-      by scanning a QRcode this will be populated already. The text will be
-      decrypted using the encryption pass phase you entered.
-    </p>
-  </li>
-  <li><p>Decrypted Text is displayed.</p></li>
-</ol>
-<blockquote>
-  <p>
-    <strong>Using OpenSSL: </strong>
-    <code ngNonBindable
-      >echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc
-      -A -base64 -pbkdf2</code
-    >
-  </p>
-</blockquote>
-
-<div id="section-to-print">
-  <h2>How to Use dice</h2>
-
-  The QR codes below can be decrypted using DICE or using the following OpenSSL
-  command:
-  <blockquote>
-    <p>
-      <strong>Using OpenSSL: </strong>
+      <strong>Use OpenSSL to decode: </strong>
       <code ngNonBindable
         >echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc
         -A -base64 -pbkdf2</code
       >
     </p>
-  </blockquote>
-
-  <p><img [attr.src]="pageSvg" [attr.alt]="url" /></p>
-</div>
+  </mat-expansion-panel>
+</mat-accordion>

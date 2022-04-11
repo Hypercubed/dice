@@ -100,17 +100,18 @@ export class DecodeComponent implements OnInit, OnDestroy {
         encoded = decodeSafeBase64(encoded).replace(/\s/g, '');
 
         const invalid = !isBase64(encoded);
-        const invalidFormat = !encoded.startsWith('U2FsdGVkX18');
+        const invalidFormat = !encoded.startsWith('U2FsdGVkX1');
+        const hasError = invalid || invalidFormat;
 
         this.encoded.setErrors(
-          invalid || invalidFormat
+          hasError
             ? {
-                invalid: !isBase64(encoded),
-                invalidFormat: !encoded.startsWith('U2FsdGVkX18'),
+                invalid,
+                invalidFormat,
               }
             : null
         );
-        return encoded;
+        return hasError ? '' : encoded;
       })
     );
 
