@@ -1,4 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  HostBinding,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { ConstantsService } from '../constants.service';
 import { QrcodeService } from '../qrcode.service';
@@ -8,13 +13,13 @@ import { QrcodeService } from '../qrcode.service';
   templateUrl: './instructions.component.html',
   styleUrls: ['./instructions.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  host: {
-    class: 'app-instructions',
-  },
 })
 export class InstructionsComponent implements OnInit {
   url!: string;
   pageSvg!: SafeUrl;
+
+  @HostBinding('class.app-instructions')
+  klass = true;
 
   constructor(
     private readonly service: QrcodeService,
