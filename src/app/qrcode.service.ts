@@ -7,6 +7,8 @@ import QRCode from 'qrcode-svg';
   providedIn: 'root',
 })
 export class QrcodeService {
+  private defaultEcl: 'L' | 'M' | 'H' | 'Q' | undefined = 'H';
+
   constructor(private readonly sanitizer: DomSanitizer) {}
 
   svg(content: string): string {
@@ -16,7 +18,7 @@ export class QrcodeService {
     }
 
     try {
-      return new QRCode({ content, ecl: 'H', join: true }).svg();
+      return new QRCode({ content, ecl: this.defaultEcl, join: true }).svg();
     } catch (err) {
       // Try a higher error correction level
       return new QRCode({ content, ecl: 'Q', join: true }).svg();
