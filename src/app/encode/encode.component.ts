@@ -114,6 +114,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
   phraseHash = '';
   encrypted: any;
   checked = false;
+  maxLength = 300; // maximum allow characters to encode (too many characters will cause the QR code to be too dense)
 
   phraseHashSvg!: SafeResourceUrl;
   svg = '';
