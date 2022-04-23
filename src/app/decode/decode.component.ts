@@ -35,6 +35,7 @@ import {
   ShowOnDirtyErrorStateMatcher,
 } from '@angular/material/core';
 import { MatStep } from '@angular/material/stepper';
+import { MatInput } from '@angular/material/input';
 
 const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
@@ -69,6 +70,7 @@ export class DecodeComponent implements OnInit, OnDestroy {
   });
 
   decrypted = '';
+  decryptionAttempted = false;
   decryptionSuccess = false;
   passwordConfirmed = false;
   scannerInitialized = false;
@@ -77,6 +79,8 @@ export class DecodeComponent implements OnInit, OnDestroy {
   @ViewChild('passwordElm') private passwordElm!: ElementRef;
 
   @ViewChild('step2') private step2!: MatStep;
+  @ViewChild('encodedInput', { static: false, read: MatInput })
+  private encodedInput!: MatInput;
 
   base64Encoded$ = of('');
 
@@ -94,6 +98,8 @@ export class DecodeComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       debounceTime(200),
       map((encoded) => {
+        this.decryptionAttempted = false;
+
         if (encoded.includes('http')) {
           const segments = encoded.split('/');
           encoded = segments[segments.length - 1];
@@ -125,7 +131,9 @@ export class DecodeComponent implements OnInit, OnDestroy {
     this.base64Encoded$
       .pipe(takeUntil(this.destroy$), distinctUntilChanged())
       .subscribe((encoded) => {
-        if (this.passwordConfirmed) {
+        this.decryptionAttempted = false;
+
+        if (encoded && this.passwordConfirmed) {
           this.decode(encoded, this.password.value);
         }
       });
@@ -149,9 +157,16 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   onPasswordOk() {
     this.passwordConfirmed = true;
-    this.step2.select();
-    this.setupReader();
-    this.decode(this.encoded.value, this.password.value);
+    setTimeout(() => {
+      this.step2.select();
+      setTimeout(() => {
+        if (this.encodedInput) this.encodedInput.focus();
+        this.setupReader();
+        if (this.encoded.value) {
+          this.decode(this.encoded.value, this.password.value);
+        }
+      }, 100);
+    }, 100);
   }
 
   another() {
@@ -205,6 +220,7 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   private decode(encoded: string, password: string) {
     if (this.passwordConfirmed) {
+      this.decryptionAttempted = true;
       this.decrypted =
         encoded && password ? this.crypto.decode(encoded, password) : '';
       if (this.decrypted) {
@@ -213,6 +229,7 @@ export class DecodeComponent implements OnInit, OnDestroy {
         this.fail();
       }
     } else {
+      this.decryptionAttempted = false;
       this.decryptionSuccess = false;
       this.decrypted = '';
     }
@@ -221,6 +238,11 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   private success() {
     this.decryptionSuccess = true;
+
+    this.form.setErrors({
+      decryptionFailed: false,
+    });
+
     if (this.constantsService.isMobile) {
       beep(100, 520, 200);
       navigator.vibrate(200);
@@ -229,6 +251,11 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   private fail() {
     this.decryptionSuccess = false;
+
+    this.form.setErrors({
+      decryptionFailed: true,
+    });
+
     if (this.constantsService.isMobile) {
       beep(999, 220, 300);
       navigator.vibrate(1000);

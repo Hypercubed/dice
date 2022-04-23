@@ -1,61 +1,69 @@
 <form [formGroup]="form">
   <mat-stepper orientation="vertical" [linear]="true">
-    <mat-step [completed]="passPhaseComplete$ | async" [optional]="false">
-      <ng-template matStepLabel>Encryption pass phase</ng-template>
-      <ng-template matStepContent>
-        <mat-form-field class="full-width main-password" appearance="fill">
-          <mat-label>Encryption pass phase</mat-label>
-          <input
-            matInput
-            type="password"
-            formControlName="password"
-            autocomplete="new-password" />
-          <password-strength-meter
-            [password]="password.value"
-            [minPasswordLength]="0"
-            [enableFeedback]="false"></password-strength-meter>
-          <mat-hint>
-            {{ passwordHint$ | async }}
-            <mat-icon
-              *ngIf="passPhaseSuggestions$ | async as tips"
-              [matTooltip]="tips"
-              >info</mat-icon
-            >
-          </mat-hint>
-        </mat-form-field>
-        <div>&nbsp;</div>
-        <mat-form-field class="full-width" appearance="fill">
-          <mat-label>Confirm Pass phase</mat-label>
-          <input
-            matInput
-            type="password"
-            formControlName="confirmPassword"
-            autocomplete="new-password" />
-          <mat-hint>Confirm encryption pass phase</mat-hint>
-          <mat-error *ngIf="confirmPassword.hasError('notConfirmed')">
-            Pass phase is not the same
-          </mat-error>
-        </mat-form-field>
-      </ng-template>
+    <mat-step
+      [completed]="passPhaseComplete$ | async"
+      [optional]="false"
+      label="Encryption pass phase"
+      state="phone">
+      <mat-form-field class="full-width main-password" appearance="fill">
+        <mat-label>Encryption pass phase</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+          autocomplete="new-password" />
+        <password-strength-meter
+          [password]="password.value"
+          [minPasswordLength]="0"
+          [enableFeedback]="false"></password-strength-meter>
+        <mat-hint>
+          {{ passwordHint$ | async }}
+          <mat-icon
+            *ngIf="passPhaseSuggestions$ | async as tips"
+            [matTooltip]="tips"
+            >info</mat-icon
+          >
+        </mat-hint>
+      </mat-form-field>
+      <div>&nbsp;</div>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Confirm Pass phase</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password" />
+        <mat-hint>Confirm encryption pass phase</mat-hint>
+        <mat-error *ngIf="confirmPassword.hasError('notConfirmed')">
+          Pass phase is not the same
+        </mat-error>
+      </mat-form-field>
     </mat-step>
     <mat-step
       #step2
       [completed]="!!encrypted"
       [hasError]="!!encodingErrorMessage"
       [errorMessage]="encodingErrorMessage"
-      [editable]="passPhaseComplete$ | async">
-      <ng-template matStepLabel>Text to encrypt</ng-template>
-      <ng-template matStepContent>
-        <mat-form-field class="full-width" appearance="fill">
-          <mat-label>Text to encrypt</mat-label>
-          <textarea matInput rows="4" formControlName="message"></textarea>
-          <mat-hint>Enter text to encrypt</mat-hint>
-        </mat-form-field>
-      </ng-template>
+      [editable]="passPhaseComplete$ | async"
+      label="Text to encrypt">
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Text to encrypt</mat-label>
+        <textarea
+          matInput
+          rows="4"
+          formControlName="message"
+          #messageInput></textarea>
+        <mat-hint>Enter text to encrypt</mat-hint>
+      </mat-form-field>
     </mat-step>
   </mat-stepper>
 
-  <mat-card class="example-card" *ngIf="encrypted">
+  <mat-card
+    class="example-card"
+    *ngIf="encrypted"
+    matBadge="3"
+    matBadgePosition="before"
+    matBadgeSize="large">
     <mat-card-content class="result-container">
       <div class="result-container__qr">
         <div>

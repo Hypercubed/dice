@@ -12,6 +12,10 @@ app-encode {
 
     &__qr {
       text-align: center;
+
+      img {
+        margin: auto;
+      }
     }
 
     &__code {
@@ -21,7 +25,7 @@ app-encode {
       box-sizing: border-box;
     }
   }
-  
+
   .result-error {
     width: 1 1 100%;
     margin: 20px auto;
@@ -33,10 +37,9 @@ app-encode {
     text-align: center;
 
     > button {
-      margin: 10px;
+      margin-top: 10px !important;
     }
   }
-
 
   .main-password {
     password-strength-meter {
@@ -44,7 +47,7 @@ app-encode {
       bottom: -1px;
       left: -10px;
       right: -10px;
-  
+
       .strength-meter {
         margin: 0 !important;
       }

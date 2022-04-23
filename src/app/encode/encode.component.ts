@@ -27,7 +27,6 @@ import {
   takeUntil,
   tap,
   startWith,
-  combineLatest,
   combineLatestWith,
 } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
@@ -37,6 +36,7 @@ import { CryptoService } from '../crypto.service';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
 import { MatStep } from '@angular/material/stepper';
+import { MatInput } from '@angular/material/input';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
@@ -126,6 +126,8 @@ export class EncodeComponent implements OnInit, OnDestroy {
   encodingErrorMessage: string = '';
 
   @ViewChild('step2') private step2!: MatStep;
+  @ViewChild('messageInput', { static: false, read: MatInput })
+  private messageInput!: MatInput;
 
   private destroy$ = new Subject<boolean>();
 
@@ -189,7 +191,10 @@ export class EncodeComponent implements OnInit, OnDestroy {
         if (passPhaseComplete) {
           setTimeout(() => {
             this.step2.select();
-          });
+            setTimeout(() => {
+              if (this.messageInput) this.messageInput.focus();
+            }, 100);
+          }, 100);
         }
       })
     );

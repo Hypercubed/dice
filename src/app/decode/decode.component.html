@@ -1,58 +1,71 @@
 <form [formGroup]="form">
   <mat-stepper
     orientation="vertical"
-    [linear]="false"
+    [linear]="true"
     (selectionChange)="stepChanged()">
-    <mat-step [completed]="passwordConfirmed" [optional]="false">
-      <ng-template matStepLabel>Encryption pass phase</ng-template>
-      <ng-template matStepContent>
-        <mat-form-field class="full-width" appearance="fill">
-          <mat-label>Encryption pass phase</mat-label>
-          <input
-            matInput
-            [type]="hide ? 'password' : 'text'"
-            formControlName="password"
-            autocomplete="new-password" />
-          <mat-icon matSuffix (click)="hide = !hide">{{
-            hide ? 'visibility_off' : 'visibility'
-          }}</mat-icon>
-        </mat-form-field>
-        <button
-          type="button"
-          mat-raised-button
-          (click)="onPasswordOk()"
-          [disabled]="!password.value || passwordConfirmed">
-          OK
-        </button>
-      </ng-template>
+    <mat-step
+      [completed]="passwordConfirmed"
+      [optional]="false"
+      [hasError]="form.hasError('decryptionFailed')"
+      label="Encryption pass phase">
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Encryption pass phase</mat-label>
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="new-password" />
+        <mat-icon matSuffix (click)="hide = !hide">{{
+          hide ? 'visibility_off' : 'visibility'
+        }}</mat-icon>
+      </mat-form-field>
+      <button
+        type="button"
+        mat-raised-button
+        (click)="onPasswordOk()"
+        [disabled]="!password.value || passwordConfirmed">
+        OK
+      </button>
     </mat-step>
-    <mat-step #step2 [completed]="!!decrypted" [editable]="passwordConfirmed">
-      <ng-template matStepLabel
-        >Enter encrypted text or scan QR code</ng-template
-      >
-      <ng-template matStepContent>
-        <div id="reader" width="600px" #readerElm></div>
-        <mat-form-field class="full-width" appearance="fill">
-          <mat-label>Text to decrypt</mat-label>
-          <textarea matInput formControlName="encoded"></textarea>
-          <mat-error *ngIf="encoded.hasError('invalid')">
-            Unable to recognize encrypted text
-          </mat-error>
-          <mat-error *ngIf="encoded.hasError('invalidFormat')">
-            Unable to identify encoding format
-          </mat-error>
-        </mat-form-field>
-      </ng-template>
+    <mat-step
+      #step2
+      [completed]="!!decrypted"
+      [editable]="passwordConfirmed"
+      [hasError]="
+        encoded.hasError('invalid') ||
+        encoded.hasError('invalidFormat') ||
+        form.hasError('decryptionFailed')
+      "
+      label="Enter encrypted text or scan QR code">
+      <div id="reader" width="600px" #readerElm></div>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Text to decrypt</mat-label>
+        <textarea matInput formControlName="encoded" #encodedInput></textarea>
+        <mat-error *ngIf="encoded.hasError('invalid')">
+          Unable to recognize encrypted text
+        </mat-error>
+        <mat-error *ngIf="encoded.hasError('invalidFormat')">
+          Unable to identify encoding format
+        </mat-error>
+      </mat-form-field>
     </mat-step>
   </mat-stepper>
 
-  <mat-card class="example-card" *ngIf="decryptionSuccess">
+  <mat-card
+    class="example-card"
+    *ngIf="decryptionAttempted"
+    matBadge="3"
+    matBadgePosition="before"
+    matBadgeSize="large">
     <mat-card-content class="result">
+      <mat-error *ngIf="form.hasError('decryptionFailed')">
+        Decryption Failed. Check pass phase and encrypted text
+      </mat-error>
       <div class="result__decoded" #decodedElm>
         {{ decrypted }}
       </div>
     </mat-card-content>
-    <mat-card-actions class="result-controls">
+    <mat-card-actions class="result-controls" *ngIf="decryptionSuccess">
       <button mat-raised-button [cdkCopyToClipboard]="decrypted">
         Copy text to clipboard
       </button>
