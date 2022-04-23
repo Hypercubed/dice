@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -21,6 +27,8 @@ import {
   takeUntil,
   tap,
   startWith,
+  combineLatest,
+  combineLatestWith,
 } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
@@ -28,6 +36,7 @@ import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
 import { CryptoService } from '../crypto.service';
 import { QrcodeService } from '../qrcode.service';
 import { ConstantsService } from '../constants.service';
+import { MatStep } from '@angular/material/stepper';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
@@ -55,6 +64,26 @@ function formatString(encrypted: string) {
     display += encrypted.substring(i, i + 4) + ' ';
   }
   return display;
+}
+
+function cleanJoin(strings: string[]) {
+  strings = strings
+    .map((s) => {
+      s = s?.trim();
+      if (s) {
+        if (s?.endsWith('.')) {
+          return s.replace(/.$/, '');
+        }
+      }
+      return s;
+    })
+    .filter(Boolean);
+
+  if (strings.length > 1) {
+    strings.push('');
+  }
+
+  return strings.join('. ');
 }
 
 @Component({
@@ -91,15 +120,12 @@ export class EncodeComponent implements OnInit, OnDestroy {
   blob: any;
   encryptedSvg!: SafeResourceUrl;
   passwordHint$ = of('Enter an pass phase');
+  passPhaseSuggestions$ = of('');
+  passPhaseComplete$ = of(false);
   encryptedText: string = '';
-  error: string = '';
+  encodingErrorMessage: string = '';
 
-  get passwordComplete() {
-    return (
-      !!this.confirmPassword.value &&
-      this.confirmPassword.value === this.password.value
-    );
-  }
+  @ViewChild('step2') private step2!: MatStep;
 
   private destroy$ = new Subject<boolean>();
 
@@ -114,7 +140,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.passwordHint$ = this.password.valueChanges.pipe(
+    const scoreWithFeedback$ = this.password.valueChanges.pipe(
       startWith(''),
       takeUntil(this.destroy$),
       debounceTime(200),
@@ -124,35 +150,47 @@ export class EncodeComponent implements OnInit, OnDestroy {
       }),
       map((password) => {
         if (!password || !password.trim()) {
+          return { score: -1, feedback: { suggestions: [], warning: '' } };
+        }
+        return this.passwordStrengthMeterService.scoreWithFeedback(password);
+      })
+    );
+
+    this.passwordHint$ = scoreWithFeedback$.pipe(
+      map(({ score, feedback }) => {
+        if (score < 0) {
           return 'Enter an pass phase';
         }
-
-        const { score, feedback } =
-          this.passwordStrengthMeterService.scoreWithFeedback(password);
 
         const hints = [
           `Pass phase is ${scoreText[score]}`,
           feedback?.warning,
-          ...feedback?.suggestions,
         ].filter(Boolean);
-        let passwordStrength = hints
-          .map((s) => {
-            if (s) {
-              s = s.trim();
-              if (s?.endsWith('.')) {
-                return s.replace(/.$/, '');
-              }
-              return s;
-            }
-            return undefined;
-          })
-          .join('. ');
+        return cleanJoin(hints);
+      })
+    );
 
-        if (hints.length > 1) {
-          passwordStrength += '.';
+    this.passPhaseSuggestions$ = scoreWithFeedback$.pipe(
+      map(({ score, feedback }) => {
+        if (score < 0) {
+          return '';
         }
+        return cleanJoin(feedback?.suggestions);
+      })
+    );
 
-        return passwordStrength;
+    this.passPhaseComplete$ = this.password.valueChanges.pipe(
+      combineLatestWith(this.confirmPassword.valueChanges),
+      map(
+        ([password, confirmPassword]) =>
+          !!confirmPassword && confirmPassword === password
+      ),
+      tap((passPhaseComplete) => {
+        if (passPhaseComplete) {
+          setTimeout(() => {
+            this.step2.select();
+          });
+        }
       })
     );
 
@@ -162,7 +200,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
         try {
           this.encode(x.message, x.password, x.includeUrl);
         } catch (err: any) {
-          this.error = err.message;
+          this.encodingErrorMessage = err.message;
           this.encryptedText =
             this.encrypted =
             this.encryptedSvg =
@@ -205,6 +243,9 @@ export class EncodeComponent implements OnInit, OnDestroy {
   }
 
   private encode(message: string, password: string, includeUrl: boolean) {
+    this.encodingErrorMessage = '';
+    this.encryptedText = this.encrypted = this.encryptedSvg = this.svg = '';
+
     if (message && password) {
       this.encrypted = this.crypto.encode(message, password);
       this.encryptedText = formatString(this.encrypted);
@@ -216,9 +257,6 @@ export class EncodeComponent implements OnInit, OnDestroy {
         : this.encrypted;
       this.svg = this.qrcodeService.base64(content);
       this.encryptedSvg = this.sanitizer.bypassSecurityTrustUrl(this.svg);
-      this.error = '';
-    } else {
-      this.encryptedText = this.encrypted = this.encryptedSvg = this.svg = '';
     }
   }
 }

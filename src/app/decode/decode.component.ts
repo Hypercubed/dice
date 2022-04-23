@@ -34,6 +34,7 @@ import {
   ErrorStateMatcher,
   ShowOnDirtyErrorStateMatcher,
 } from '@angular/material/core';
+import { MatStep } from '@angular/material/stepper';
 
 const a = new AudioContext(); // browsers limit the number of concurrent audio contexts, so you better re-use'em
 
@@ -70,12 +71,12 @@ export class DecodeComponent implements OnInit, OnDestroy {
   decrypted = '';
   decryptionSuccess = false;
   passwordConfirmed = false;
+  scannerInitialized = false;
 
-  html5QrcodeScanner!: Html5QrcodeScanner;
+  @ViewChild('decodedElm') private decodedElm!: ElementRef;
+  @ViewChild('passwordElm') private passwordElm!: ElementRef;
 
-  @ViewChild('decodedElm') decodedElm!: ElementRef;
-  @ViewChild('readerElm') readerElm!: ElementRef;
-  @ViewChild('passwordElm') passwordElm!: ElementRef;
+  @ViewChild('step2') private step2!: MatStep;
 
   base64Encoded$ = of('');
 
@@ -129,34 +130,6 @@ export class DecodeComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.html5QrcodeScanner = new Html5QrcodeScanner(
-      'reader',
-      { fps: 10, qrbox: 150 },
-      false
-    );
-
-    this.html5QrcodeScanner.render((encoded) => {
-      if (encoded.includes('http')) {
-        const segments = encoded.split('/');
-        encoded = decodeSafeBase64(segments[segments.length - 1]);
-      }
-      if (isBase64(encoded)) {
-        if (encoded !== this.encoded.value) {
-          this.encoded.setValue(encoded);
-          if (
-            this.passwordConfirmed &&
-            this.decode(this.encoded.value, this.password.value)
-          ) {
-            this.decodedElm.nativeElement.scrollIntoView();
-          } else {
-            this.passwordElm.nativeElement.scrollIntoView();
-          }
-        }
-      } else {
-        this.fail();
-      }
-    }, undefined);
-
     setTimeout(() => {
       this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
         const param = params['encoded'];
@@ -176,12 +149,58 @@ export class DecodeComponent implements OnInit, OnDestroy {
 
   onPasswordOk() {
     this.passwordConfirmed = true;
+    this.step2.select();
+    this.setupReader();
     this.decode(this.encoded.value, this.password.value);
   }
 
   another() {
     this.encoded.setValue('');
     this.decrypted = '';
+  }
+
+  stepChanged() {
+    if (!this.scannerInitialized) {
+      setTimeout(() => {
+        this.setupReader();
+      }, 100);
+    }
+  }
+
+  private setupReader() {
+    try {
+      const html5QrcodeScanner = new Html5QrcodeScanner(
+        'reader',
+        { fps: 10, qrbox: 150 },
+        false
+      );
+
+      html5QrcodeScanner.render((encoded) => {
+        if (encoded.includes('http')) {
+          const segments = encoded.split('/');
+          encoded = decodeSafeBase64(segments[segments.length - 1]);
+        }
+        if (isBase64(encoded)) {
+          if (encoded !== this.encoded.value) {
+            this.encoded.setValue(encoded);
+            if (
+              this.passwordConfirmed &&
+              this.decode(this.encoded.value, this.password.value)
+            ) {
+              this.decodedElm.nativeElement.scrollIntoView();
+            } else {
+              this.passwordElm.nativeElement.scrollIntoView();
+            }
+          }
+        } else {
+          this.fail();
+        }
+      }, undefined);
+
+      this.scannerInitialized = true;
+    } catch (err) {
+      this.scannerInitialized = false;
+    }
   }
 
   private decode(encoded: string, password: string) {

@@ -13,9 +13,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatStepperModule } from '@angular/material/stepper';
 
 import { DecodeComponent } from './decode.component';
-import { MatIconModule } from '@angular/material/icon';
 
 const routes: Routes = [
   {
@@ -45,6 +46,7 @@ const routes: Routes = [
     MatInputModule,
     MatSnackBarModule,
     MatExpansionModule,
+    MatStepperModule,
   ],
   exports: [RouterModule],
 })

@@ -1,4 +1,3 @@
-
 [hidden] {
   visibility: hidden;
   height: 0;
@@ -13,5 +12,13 @@
     margin: 20px 0 !important;
     word-wrap: break-word;
     overflow-wrap: anywhere;
+  }
+
+  &-controls {
+    text-align: center;
+
+    > button {
+      margin: 10px;
+    }
   }
 }

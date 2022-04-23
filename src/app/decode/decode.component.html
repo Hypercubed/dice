@@ -1,88 +1,61 @@
 <form [formGroup]="form">
-  <mat-accordion>
-    <mat-expansion-panel [expanded]="!passwordConfirmed && !decrypted">
-      <mat-expansion-panel-header>
-        <mat-panel-title> Encryption pass phase </mat-panel-title>
-        <mat-panel-description>
-          <span *ngIf="!passwordConfirmed">Enter an encryption pass phase</span>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <mat-form-field class="full-width" appearance="fill">
-        <mat-label>Encryption pass phase</mat-label>
-        <input
-          matInput
-          [type]="hide ? 'password' : 'text'"
-          formControlName="password"
-          autocomplete="new-password" />
-        <mat-icon matSuffix (click)="hide = !hide">{{
-          hide ? 'visibility_off' : 'visibility'
-        }}</mat-icon>
-      </mat-form-field>
-      <button
-        type="button"
-        mat-raised-button
-        (click)="onPasswordOk()"
-        [disabled]="!password.value || passwordConfirmed">
-        OK
-      </button>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel [expanded]="passwordConfirmed && !decrypted">
-      <mat-expansion-panel-header>
-        <mat-panel-title> Encrypted string </mat-panel-title>
-        <mat-panel-description>
-          <span *ngIf="!encoded.value"
-            >Enter encrypted text or scan QR code</span
-          >
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div id="reader" width="600px" #readerElm></div>
-      <mat-form-field class="full-width" appearance="fill">
-        <mat-label>Text to decrypt</mat-label>
-        <textarea matInput formControlName="encoded"></textarea>
-        <mat-error *ngIf="encoded.hasError('invalid')">
-          Unable to recognize encrypted text
-        </mat-error>
-        <mat-error *ngIf="encoded.hasError('invalidFormat')">
-          Unable to identify encoding format
-        </mat-error>
-      </mat-form-field>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel
-      class="result-panel"
-      [expanded]="decryptionSuccess"
-      [disabled]="!passwordConfirmed || !decryptionSuccess">
-      <mat-expansion-panel-header>
-        <mat-panel-title> Result </mat-panel-title>
-        <mat-panel-description>
-          <i *ngIf="!passwordConfirmed">Confirm Password</i>
-          <i *ngIf="passwordConfirmed && !decryptionSuccess"
-            >Decryption Failed. Check pass phase or encrypted text</i
-          >
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div class="result" *ngIf="encoded.value">
-        <div class="result__decoded" #decodedElm>
-          {{ decrypted }}
-        </div>
-        <button type="button" mat-raised-button (click)="another()">
-          Scan another
+  <mat-stepper
+    orientation="vertical"
+    [linear]="false"
+    (selectionChange)="stepChanged()">
+    <mat-step [completed]="passwordConfirmed" [optional]="false">
+      <ng-template matStepLabel>Encryption pass phase</ng-template>
+      <ng-template matStepContent>
+        <mat-form-field class="full-width" appearance="fill">
+          <mat-label>Encryption pass phase</mat-label>
+          <input
+            matInput
+            [type]="hide ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="new-password" />
+          <mat-icon matSuffix (click)="hide = !hide">{{
+            hide ? 'visibility_off' : 'visibility'
+          }}</mat-icon>
+        </mat-form-field>
+        <button
+          type="button"
+          mat-raised-button
+          (click)="onPasswordOk()"
+          [disabled]="!password.value || passwordConfirmed">
+          OK
         </button>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
-
-  <mat-card class="example-card">
-    <mat-card-title
-      ><a href="https://wiki.openssl.org/index.php/Enc">OpenSSL ENC command</a
-      >:</mat-card-title
-    >
-    <mat-card-content>
-      <code
-        >echo -n "{{ base64Encoded$ | async }}" | openssl enc -d -aes-256-cbc
-        -base64 -A -pbkdf2</code
+      </ng-template>
+    </mat-step>
+    <mat-step #step2 [completed]="!!decrypted" [editable]="passwordConfirmed">
+      <ng-template matStepLabel
+        >Enter encrypted text or scan QR code</ng-template
       >
+      <ng-template matStepContent>
+        <div id="reader" width="600px" #readerElm></div>
+        <mat-form-field class="full-width" appearance="fill">
+          <mat-label>Text to decrypt</mat-label>
+          <textarea matInput formControlName="encoded"></textarea>
+          <mat-error *ngIf="encoded.hasError('invalid')">
+            Unable to recognize encrypted text
+          </mat-error>
+          <mat-error *ngIf="encoded.hasError('invalidFormat')">
+            Unable to identify encoding format
+          </mat-error>
+        </mat-form-field>
+      </ng-template>
+    </mat-step>
+  </mat-stepper>
+
+  <mat-card class="example-card" *ngIf="decryptionSuccess">
+    <mat-card-content class="result">
+      <div class="result__decoded" #decodedElm>
+        {{ decrypted }}
+      </div>
     </mat-card-content>
+    <mat-card-actions class="result-controls">
+      <button mat-raised-button [cdkCopyToClipboard]="decrypted">
+        Copy text to clipboard
+      </button>
+    </mat-card-actions>
   </mat-card>
 </form>
