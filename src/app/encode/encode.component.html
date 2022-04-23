@@ -66,13 +66,13 @@
     matBadgeSize="large">
     <mat-card-content class="result-container">
       <div class="result-container__qr">
+        <div (click)="copyImage()">
+          <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+        </div>
         <div>
           <mat-checkbox formControlName="includeUrl"
             >Include URL in QR code</mat-checkbox
           >
-        </div>
-        <div (click)="copyImage()">
-          <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
         </div>
       </div>
       <div class="result-container__code">

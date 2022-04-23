@@ -3,6 +3,7 @@ app-encode {
     width: 100%;
     display: flex;
     margin: 10px auto;
+    align-items: flex-start;
 
     > * {
       flex: 0 0 50%;
@@ -19,10 +20,18 @@ app-encode {
     }
 
     &__code {
-      padding: 40px;
       font-family: monospace, monospace;
-      padding: 40px 20px;
       box-sizing: border-box;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        white,
+        white 1.5em,
+        #e3e3e3 1.5em,
+        #e3e3e3 3em
+      );
+      line-height: 1.5em;
+      padding: 0 1em;
+      text-align: justify;
     }
   }
 
