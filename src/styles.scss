@@ -127,6 +127,7 @@ h6 {
   min-width: 150px;
   max-width: 850px;
   margin: 0 auto;
+  padding: 0 10px;
 }
 
 .example-spacer {
@@ -143,9 +144,10 @@ form {
     width: 100%;
   }
 
-  .example-card {
+  .results-card {
     flex: 0 0 100%;
     max-width: 100%;
+    margin: 0 30px;
   }
 
   svg {

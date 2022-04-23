@@ -18,9 +18,6 @@ export class InstructionsComponent implements OnInit {
   url!: string;
   pageSvg!: SafeUrl;
 
-  @HostBinding('class.app-instructions')
-  klass = true;
-
   constructor(
     private readonly service: QrcodeService,
     private readonly constantsService: ConstantsService
