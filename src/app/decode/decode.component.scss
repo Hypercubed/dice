@@ -1,24 +1,30 @@
-[hidden] {
-  visibility: hidden;
-  height: 0;
-}
-
-.result {
-  width: 100%;
-  text-align: center;
-
-  &__decoded {
-    font-size: 1.5em;
-    margin: 20px 0 !important;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
+app-decode {
+  [hidden] {
+    visibility: hidden;
+    height: 0;
   }
 
-  &-controls {
+  .mat-icon.camera {
+    margin-left: 10px;
+  }
+
+  .result {
+    width: 100%;
     text-align: center;
 
-    > button {
-      margin: 10px;
+    &__decoded {
+      font-size: 1.5em;
+      margin: 20px 0 !important;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    &-controls {
+      text-align: center;
+
+      > button {
+        margin: 10px;
+      }
     }
   }
 }

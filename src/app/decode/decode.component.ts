@@ -4,6 +4,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -40,12 +41,14 @@ function cleanup(encoded: string) {
 }
 
 @Component({
+  selector: 'app-decode',
   templateUrl: './decode.component.html',
   styleUrls: ['./decode.component.scss'],
   providers: [
     DecodeStore,
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
   ],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DecodeComponent implements OnInit {
   vm$ = this.store.vm$;
@@ -65,7 +68,7 @@ export class DecodeComponent implements OnInit {
   @ViewChild('encodedInput', { static: false, read: MatInput })
   private encodedInput!: MatInput;
 
-  private scannerInitialized = false;
+  private html5QrcodeScanner!: Html5QrcodeScanner | undefined;
 
   constructor(
     private readonly store: DecodeStore,
@@ -127,10 +130,7 @@ export class DecodeComponent implements OnInit {
         .subscribe((params) => {
           const param = params['encoded'];
           if (param && isUrlSafeBase64(param)) {
-            const encoded = cleanup(params['encoded']);
-            if (encoded !== this.encoded.value) {
-              this.encoded.setValue(encoded);
-            }
+            this.onRead(params['encoded']);
             this.location.replaceState('decode');
           }
         });
@@ -150,37 +150,37 @@ export class DecodeComponent implements OnInit {
       this.step2.select();
       setTimeout(() => {
         if (this.encodedInput) this.encodedInput.focus();
-        this.setupReader();
         this.store.decode();
       }, 100);
     }, 100);
   }
 
-  stepChanged() {
-    setTimeout(() => {
-      this.setupReader();
-    }, 100);
-  }
+  toggleReader() {
+    if (this.html5QrcodeScanner) {
+      this.html5QrcodeScanner.clear();
+      this.html5QrcodeScanner = undefined;
+      return;
+    }
 
-  private setupReader() {
-    if (this.scannerInitialized) return;
-
-    this.scannerInitialized = true;
     try {
-      const html5QrcodeScanner = new Html5QrcodeScanner(
+      this.html5QrcodeScanner = new Html5QrcodeScanner(
         'reader',
         { fps: 10, qrbox: 150 },
         false
       );
 
-      html5QrcodeScanner.render((encoded) => {
-        encoded = cleanup(encoded);
-        if (encoded !== this.encoded.value) {
-          this.encoded.setValue(encoded);
-        }
+      this.html5QrcodeScanner.render((encoded) => {
+        this.onRead(encoded);
       }, undefined);
     } catch (err) {
-      this.scannerInitialized = false;
+      this.html5QrcodeScanner = undefined;
+    }
+  }
+
+  private onRead(encoded: string) {
+    encoded = cleanup(encoded);
+    if (encoded !== this.encoded.value) {
+      this.encoded.setValue(encoded);
     }
   }
 }

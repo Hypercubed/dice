@@ -1,8 +1,5 @@
 <form [formGroup]="form" *ngIf="vm$ | async as vm">
-  <mat-stepper
-    orientation="vertical"
-    [linear]="true"
-    (selectionChange)="stepChanged()">
+  <mat-stepper orientation="vertical" [linear]="true">
     <mat-step
       [completed]="vm.passPhaseConfirmed"
       [optional]="false"
@@ -41,6 +38,9 @@
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to decrypt</mat-label>
         <textarea matInput formControlName="encoded" #encodedInput></textarea>
+        <mat-icon class="camera" matSuffix (click)="toggleReader()"
+          >camera_alt</mat-icon
+        >
         <mat-error *ngIf="encoded.hasError('invalid')">
           Unable to recognize encrypted text
         </mat-error>
