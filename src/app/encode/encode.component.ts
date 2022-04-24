@@ -11,7 +11,6 @@ import {
   FormGroup,
   ValidatorFn,
 } from '@angular/forms';
-import { Location } from '@angular/common';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStep } from '@angular/material/stepper';
@@ -33,13 +32,12 @@ import {
 } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 
-import { ConstantsService } from '../constants.service';
 import { EncodeStore } from './encode.store';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
 
-function confirm(password: AbstractControl): ValidatorFn {
+function confirmValidator(password: AbstractControl): ValidatorFn {
   const validator = (control: AbstractControl): any | undefined => {
     if (control.value !== password.value) {
       return {
@@ -61,12 +59,12 @@ function confirm(password: AbstractControl): ValidatorFn {
   encapsulation: ViewEncapsulation.None,
   providers: [EncodeStore],
 })
-export class EncodeComponent implements OnInit, OnDestroy {
+export class EncodeComponent implements OnInit {
   vm$ = this.store.vm$;
 
   readonly password = new FormControl('');
-  readonly confirmPassword = new FormControl('', {
-    validators: [confirm(this.password)],
+  readonly confirmPassPhase = new FormControl('', {
+    validators: [confirmValidator(this.password)],
     updateOn: 'change',
   });
   readonly message = new FormControl('');
@@ -74,7 +72,7 @@ export class EncodeComponent implements OnInit, OnDestroy {
 
   readonly form = new FormGroup({
     password: this.password,
-    confirmPassword: this.confirmPassword,
+    confirmPassPhase: this.confirmPassPhase,
     message: this.message,
     includeUrl: this.includeUrl,
   });
@@ -88,8 +86,6 @@ export class EncodeComponent implements OnInit, OnDestroy {
   @ViewChild(QRCodeComponent, { static: false })
   private readonly qrCode!: QRCodeComponent;
 
-  private readonly destroy$ = new Subject<boolean>();
-
   get svg() {
     const img: HTMLImageElement =
       this.qrCode.qrcElement.nativeElement.getElementsByTagName('img')[0];
@@ -98,44 +94,32 @@ export class EncodeComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly store: EncodeStore,
-    private readonly snackBar: MatSnackBar,
-    private readonly location: Location,
-    private readonly constantsService: ConstantsService
+    private readonly snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
+    // Clear confirm password field when password field changes
+    // And update hints
     this.password.valueChanges
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntil(this.store.destroy$),
         startWith(this.password.value),
-        debounceTime(200),
         distinctUntilChanged(),
         tap(() => {
           // Clears existing confirmation
-          if (this.confirmPassword.value) {
-            this.confirmPassword.setValue('');
+          if (this.confirmPassPhase.value) {
+            this.confirmPassPhase.setValue('');
           }
         })
       )
-      .subscribe((password: string) => {
-        this.store.setPassPhase(password);
-      });
-
-    this.confirmPassword.valueChanges
-      .pipe(
-        takeUntil(this.destroy$),
-        startWith(this.confirmPassword.value),
-        debounceTime(200),
-        distinctUntilChanged()
-      )
-      .subscribe((confirmPassPhase) => {
-        this.store.setConfirmPassPhase(confirmPassPhase);
+      .subscribe((passPhase: string) => {
+        this.store.setPassPhase(passPhase);
       });
 
     // Focus on input when password is complete
     this.store.passPhaseVerified$
       .pipe(
-        takeUntil(this.destroy$),
+        takeUntil(this.store.destroy$),
         filter(Boolean),
         delay(100),
         tap(() => this.step2.select()),
@@ -145,21 +129,17 @@ export class EncodeComponent implements OnInit, OnDestroy {
         if (this.messageInput) this.messageInput.focus();
       });
 
-    this.message.valueChanges
+    this.form.valueChanges
       .pipe(
-        takeUntil(this.destroy$),
-        startWith(this.message.value),
+        takeUntil(this.store.destroy$),
         debounceTime(200),
-        distinctUntilChanged()
+        tap((values) => {
+          this.store.patchState(values);
+        })
       )
-      .subscribe((message) => {
-        this.store.setMessage(message);
+      .subscribe(() => {
+        this.store.encode();
       });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
   }
 
   downloadImage() {

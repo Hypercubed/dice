@@ -7,6 +7,7 @@ import { encode } from 'url-safe-base64';
 
 import { CryptoService } from '../crypto.service';
 import { ConstantsService } from '../constants.service';
+import { pipe, tap, withLatestFrom } from 'rxjs';
 
 function cleanJoin(strings: Array<string | undefined>) {
   strings = strings
@@ -43,22 +44,26 @@ export interface EncodeState {
   confirmPassPhase: string;
   passPhaseHint: string;
   passPhaseSuggestions: string;
-  passPhaseVerified: boolean;
   message: string;
   encoded: string;
   encodingErrorMessage: string;
   encryptedText: string;
   includeUrl: boolean;
-  qrContent: string;
 }
 
 @Injectable()
 export class EncodeStore extends ComponentStore<EncodeState> {
-  readonly passPhaseVerified$ = this.select((state) => state.passPhaseVerified);
+  readonly passPhaseVerified$ = this.select((state) => {
+    return (
+      !!state.confirmPassPhase && state.confirmPassPhase === state.passPhase
+    );
+  });
+
   readonly encryptedText$ = this.select((state) => {
     if (!state.encoded || state.encodingErrorMessage) return '';
     return formatString(state.encoded);
   });
+
   readonly qrContent$ = this.select((state) => {
     if (!state.encoded || state.encodingErrorMessage) return '';
 
@@ -74,10 +79,12 @@ export class EncodeStore extends ComponentStore<EncodeState> {
     this.state$,
     this.encryptedText$,
     this.qrContent$,
-    (state, encryptedText, qrContent) => ({
+    this.passPhaseVerified$,
+    (state, encryptedText, qrContent, passPhaseVerified) => ({
       ...state,
       encryptedText,
       qrContent,
+      passPhaseVerified,
     })
   );
 
@@ -91,14 +98,12 @@ export class EncodeStore extends ComponentStore<EncodeState> {
       passPhase: '',
       passPhaseHint: '',
       passPhaseSuggestions: '',
-      passPhaseVerified: false,
       confirmPassPhase: '',
       message: '',
       encoded: '',
       encryptedText: '',
       encodingErrorMessage: '',
       includeUrl: true,
-      qrContent: '',
     });
   }
 
@@ -127,59 +132,32 @@ export class EncodeStore extends ComponentStore<EncodeState> {
         feedback?.warning,
       ]),
       passPhaseSuggestions: cleanJoin(feedback?.suggestions || []),
-      encodingErrorMessage: '',
-      encoded: '',
     };
   });
 
-  readonly setConfirmPassPhase = this.updater(
-    (state, confirmPassPhase: string) => {
-      confirmPassPhase = confirmPassPhase?.trim();
-      const passPhaseVerified =
-        !!confirmPassPhase && confirmPassPhase === state.passPhase;
-      return {
-        ...state,
-        confirmPassPhase,
-        passPhaseVerified,
-        ...this.getEncryptedValues({
-          ...state,
-          passPhaseVerified,
-        }),
-      };
-    }
+  // Effects
+
+  readonly encode = this.effect<void>(
+    pipe(
+      withLatestFrom(this.state$, this.passPhaseVerified$),
+      tap(([, state, passPhaseVerified]) => {
+        let encodingErrorMessage = '';
+        let encoded = '';
+
+        if (passPhaseVerified) {
+          try {
+            encoded = this.crypto.encode(state.message, state.passPhase);
+          } catch (e: any) {
+            console.error(e);
+            encodingErrorMessage = e.message;
+          }
+        }
+
+        this.patchState({
+          encoded,
+          encodingErrorMessage,
+        });
+      })
+    )
   );
-
-  readonly setMessage = this.updater((state, message: string) => {
-    message = message?.trim();
-
-    return {
-      ...state,
-      message,
-      ...this.getEncryptedValues({
-        ...state,
-        message,
-      }),
-    };
-  });
-
-  // Helpers
-
-  getEncryptedValues(state: EncodeState) {
-    let encodingErrorMessage = '';
-    let encoded = '';
-
-    if (state.passPhaseVerified) {
-      try {
-        encoded = this.crypto.encode(state.message, state.passPhase);
-      } catch (e: any) {
-        console.error(e);
-        encodingErrorMessage = e.message;
-      }
-    }
-
-    return {
-      encoded,
-      encodingErrorMessage,
-    };
-  }
 }

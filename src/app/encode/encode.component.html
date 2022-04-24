@@ -29,10 +29,10 @@
         <input
           matInput
           type="password"
-          formControlName="confirmPassword"
+          formControlName="confirmPassPhase"
           autocomplete="new-password" />
         <mat-hint>Confirm encryption pass phase</mat-hint>
-        <mat-error *ngIf="confirmPassword.hasError('notConfirmed')">
+        <mat-error *ngIf="confirmPassPhase.hasError('notConfirmed')">
           Pass phase is not the same
         </mat-error>
       </mat-form-field>

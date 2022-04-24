@@ -1,10 +1,10 @@
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="vm$ | async as vm">
   <mat-stepper
     orientation="vertical"
     [linear]="true"
     (selectionChange)="stepChanged()">
     <mat-step
-      [completed]="passwordConfirmed"
+      [completed]="vm.passPhaseConfirmed"
       [optional]="false"
       [hasError]="form.hasError('decryptionFailed')"
       label="Encryption pass phase">
@@ -12,29 +12,29 @@
         <mat-label>Encryption pass phase</mat-label>
         <input
           matInput
-          [type]="hide ? 'password' : 'text'"
-          formControlName="password"
+          [type]="vm.showPassPhase ? 'text' : 'password'"
+          formControlName="passPhase"
           autocomplete="new-password" />
-        <mat-icon matSuffix (click)="hide = !hide">{{
-          hide ? 'visibility_off' : 'visibility'
+        <mat-icon matSuffix (click)="onTogglePassPhase(!vm.showPassPhase)">{{
+          vm.showPassPhase ? 'visibility' : 'visibility_off'
         }}</mat-icon>
       </mat-form-field>
       <button
         type="button"
         mat-raised-button
-        (click)="onPasswordOk()"
-        [disabled]="!password.value || passwordConfirmed">
+        (click)="onPassPhaseOk()"
+        [disabled]="!passPhase.value || vm.passPhaseConfirmed">
         OK
       </button>
     </mat-step>
     <mat-step
       #step2
-      [completed]="!!decrypted"
-      [editable]="passwordConfirmed"
+      [completed]="!!vm.decrypted"
+      [editable]="vm.passPhaseConfirmed"
       [hasError]="
         encoded.hasError('invalid') ||
         encoded.hasError('invalidFormat') ||
-        form.hasError('decryptionFailed')
+        (vm.decryptionAttempted && !vm.decryptionSuccess)
       "
       label="Enter encrypted text or scan QR code">
       <div id="reader" width="600px" #readerElm></div>
@@ -53,20 +53,20 @@
 
   <mat-card
     class="results-card"
-    *ngIf="decryptionAttempted"
+    *ngIf="vm.decryptionAttempted"
     matBadge="3"
     matBadgePosition="before"
     matBadgeSize="large">
     <mat-card-content class="result">
-      <mat-error *ngIf="form.hasError('decryptionFailed')">
+      <mat-error *ngIf="!vm.decryptionSuccess">
         Decryption Failed. Check pass phase and encrypted text
       </mat-error>
       <div class="result__decoded" #decodedElm>
-        {{ decrypted }}
+        {{ vm.decrypted }}
       </div>
     </mat-card-content>
-    <mat-card-actions class="result-controls" *ngIf="decryptionSuccess">
-      <button mat-raised-button [cdkCopyToClipboard]="decrypted">
+    <mat-card-actions class="result-controls" *ngIf="vm.decryptionSuccess">
+      <button mat-raised-button [cdkCopyToClipboard]="vm.decrypted">
         Copy text to clipboard
       </button>
     </mat-card-actions>
