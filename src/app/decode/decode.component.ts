@@ -183,6 +183,9 @@ export class DecodeComponent implements OnInit, OnDestroy {
   }
 
   private setupReader() {
+    if (this.scannerInitialized) return;
+
+    this.scannerInitialized = true;
     try {
       const html5QrcodeScanner = new Html5QrcodeScanner(
         'reader',
@@ -211,8 +214,6 @@ export class DecodeComponent implements OnInit, OnDestroy {
           this.fail();
         }
       }, undefined);
-
-      this.scannerInitialized = true;
     } catch (err) {
       this.scannerInitialized = false;
     }

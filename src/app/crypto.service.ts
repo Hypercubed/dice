@@ -40,9 +40,13 @@ export class CryptoService {
     return [...pbk, salt];
   }
 
-  encode(message: string, password: string) {
+  encode(message: string, password: string): string {
     message = (message || '').trim();
     password = (password || '').trim();
+
+    if (!message || !password) {
+      return '';
+    }
 
     const phraseHash = this.hash(message);
 

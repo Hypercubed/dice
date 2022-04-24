@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { RouterModule, Routes } from '@angular/router';
+import { QRCodeModule } from 'angularx-qrcode';
 
 import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 
@@ -45,6 +46,7 @@ const routes: Routes = [
     MatStepperModule,
     MatTooltipModule,
     MatBadgeModule,
+    QRCodeModule,
   ],
   exports: [RouterModule],
 })

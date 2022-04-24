@@ -41,7 +41,7 @@
     </mat-step>
     <mat-step
       #step2
-      [completed]="!!encrypted"
+      [completed]="!!(encryptedText$ | async)"
       [hasError]="!!encodingErrorMessage"
       [errorMessage]="encodingErrorMessage"
       [editable]="passPhaseComplete$ | async"
@@ -64,14 +64,20 @@
 
   <mat-card
     class="results-card"
-    *ngIf="encrypted"
+    *ngIf="encryptedText$ | async as encryptedText"
     matBadge="3"
     matBadgePosition="before"
     matBadgeSize="large">
     <mat-card-content class="result-container">
-      <div class="result-container__qr">
+      <div class="result-container__qr" *ngIf="qrContent$ | async as qrContent">
         <div (click)="copyImage()">
-          <img [attr.src]="encryptedSvg" [attr.alt]="encrypted" matRipple />
+          <qrcode
+            (click)="copyImage()"
+            [allowEmptyString]="true"
+            [qrdata]="qrContent"
+            [width]="256"
+            errorCorrectionLevel="H"
+            elementType="img"></qrcode>
         </div>
         <div>
           <mat-checkbox formControlName="includeUrl"
