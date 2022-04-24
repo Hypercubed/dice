@@ -7,7 +7,10 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { RouterModule, Routes } from '@angular/router';
 import { QRCodeModule } from 'angularx-qrcode';
 
-import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
+import {
+  PasswordStrengthMeterModule,
+  PasswordStrengthMeterService,
+} from 'angular-password-strength-meter';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 
 import { EncodeComponent } from './encode.component';
+import { EncodeStore } from './encode.store';
 
 const routes: Routes = [
   {
@@ -49,5 +53,6 @@ const routes: Routes = [
     QRCodeModule,
   ],
   exports: [RouterModule],
+  providers: [PasswordStrengthMeterService],
 })
 export class AppEncodeModule {}

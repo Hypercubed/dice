@@ -1,7 +1,7 @@
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="vm$ | async as vm">
   <mat-stepper orientation="vertical" [linear]="true">
     <mat-step
-      [completed]="passPhaseComplete$ | async"
+      [completed]="vm.passPhaseVerified"
       [optional]="false"
       label="Encryption pass phase"
       state="phone">
@@ -17,10 +17,8 @@
           [minPasswordLength]="0"
           [enableFeedback]="false"></password-strength-meter>
         <mat-hint>
-          {{ passwordHint$ | async }}
-          <mat-icon
-            *ngIf="passPhaseSuggestions$ | async as tips"
-            [matTooltip]="tips"
+          {{ vm.passPhaseHint }}
+          <mat-icon *ngIf="vm.passPhaseSuggestions as tips" [matTooltip]="tips"
             >info</mat-icon
           >
         </mat-hint>
@@ -41,10 +39,10 @@
     </mat-step>
     <mat-step
       #step2
-      [completed]="!!(encryptedText$ | async)"
-      [hasError]="!!encodingErrorMessage"
-      [errorMessage]="encodingErrorMessage"
-      [editable]="passPhaseComplete$ | async"
+      [completed]="!!vm.encryptedText"
+      [hasError]="!!vm.encodingErrorMessage"
+      [errorMessage]="vm.encodingErrorMessage"
+      [editable]="vm.passPhaseVerified"
       label="Text to encrypt">
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to encrypt</mat-label>
@@ -64,17 +62,17 @@
 
   <mat-card
     class="results-card"
-    *ngIf="encryptedText$ | async as encryptedText"
+    *ngIf="vm.encryptedText"
     matBadge="3"
     matBadgePosition="before"
     matBadgeSize="large">
     <mat-card-content class="result-container">
-      <div class="result-container__qr" *ngIf="qrContent$ | async as qrContent">
+      <div class="result-container__qr" *ngIf="vm.qrContent">
         <div (click)="copyImage()">
           <qrcode
             (click)="copyImage()"
             [allowEmptyString]="true"
-            [qrdata]="qrContent"
+            [qrdata]="vm.qrContent"
             [width]="256"
             errorCorrectionLevel="H"
             elementType="img"></qrcode>
@@ -86,14 +84,14 @@
         </div>
       </div>
       <div class="result-container__code">
-        {{ encryptedText }}
+        {{ vm.encryptedText }}
       </div>
     </mat-card-content>
     <mat-card-actions class="result-controls">
       <button mat-raised-button (click)="copyImage()">
         Copy QRCode to clipboard
       </button>
-      <button mat-raised-button [cdkCopyToClipboard]="encryptedText">
+      <button mat-raised-button [cdkCopyToClipboard]="vm.encryptedText">
         Copy code to clipboard
       </button>
       <button mat-raised-button (click)="downloadImage()">
