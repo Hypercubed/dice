@@ -155,9 +155,9 @@ export class DecodeComponent implements OnInit {
     }, 100);
   }
 
-  toggleReader() {
+  async toggleReader() {
     if (this.html5QrcodeScanner) {
-      this.html5QrcodeScanner.clear();
+      await this.html5QrcodeScanner.clear();
       this.html5QrcodeScanner = undefined;
       return;
     }

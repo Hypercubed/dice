@@ -66,6 +66,10 @@ app-encode {
       display: none !important;
     }
   }
+
+  .results-card {
+    outline: 2px solid black;
+  }
 }
 
 @media (max-width: 768px) {

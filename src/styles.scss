@@ -159,24 +159,26 @@ form {
   display: none;
 }
 
-#section-to-print {
-  display: none;
-  outline: 2px solid black;
-}
-
 @media print {
-  body * {
+  // body:has(#section-to-print),
+  body.encode *,
+  body.decode * {
     visibility: hidden;
   }
+
   #section-to-print,
   #section-to-print * {
-    display: unset;
     visibility: visible;
   }
   #section-to-print {
     position: absolute;
+    top: 10px;
+    width: 100%;
     left: 0;
-    top: 0;
+  }
+  .no-print,
+  .mat-badge-content {
+    display: none !important;
   }
 }
 

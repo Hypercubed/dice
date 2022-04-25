@@ -60,43 +60,45 @@
     </mat-step>
   </mat-stepper>
 
-  <mat-card
-    class="results-card"
-    *ngIf="vm.encryptedText"
-    matBadge="3"
-    matBadgePosition="before"
-    matBadgeSize="large">
-    <mat-card-content class="result-container">
-      <div class="result-container__qr" *ngIf="vm.qrContent">
-        <div (click)="copyImage()">
-          <qrcode
-            (click)="copyImage()"
-            [allowEmptyString]="true"
-            [qrdata]="vm.qrContent"
-            [width]="256"
-            errorCorrectionLevel="H"
-            elementType="img"></qrcode>
+  <div id="section-to-print">
+    <mat-card
+      class="results-card"
+      *ngIf="vm.encryptedText"
+      matBadge="3"
+      matBadgePosition="before"
+      matBadgeSize="large">
+      <mat-card-content class="result-container">
+        <div class="result-container__qr" *ngIf="vm.qrContent">
+          <div (click)="copyImage()">
+            <qrcode
+              (click)="copyImage()"
+              [allowEmptyString]="true"
+              [qrdata]="vm.qrContent"
+              [width]="256"
+              errorCorrectionLevel="H"
+              elementType="img"></qrcode>
+          </div>
+          <div>
+            <mat-checkbox formControlName="includeUrl" class="no-print"
+              >Include URL in QR code</mat-checkbox
+            >
+          </div>
         </div>
-        <div>
-          <mat-checkbox formControlName="includeUrl"
-            >Include URL in QR code</mat-checkbox
-          >
+        <div class="result-container__code">
+          {{ vm.encryptedText }}
         </div>
-      </div>
-      <div class="result-container__code">
-        {{ vm.encryptedText }}
-      </div>
-    </mat-card-content>
-    <mat-card-actions class="result-controls">
-      <button mat-raised-button (click)="copyImage()">
-        Copy QRCode to clipboard
-      </button>
-      <button mat-raised-button [cdkCopyToClipboard]="vm.encryptedText">
-        Copy code to clipboard
-      </button>
-      <button mat-raised-button (click)="downloadImage()">
-        Download QR Code
-      </button>
-    </mat-card-actions>
-  </mat-card>
+      </mat-card-content>
+      <mat-card-actions class="result-controls no-print">
+        <button mat-raised-button (click)="copyImage()">
+          Copy QRCode to clipboard
+        </button>
+        <button mat-raised-button [cdkCopyToClipboard]="vm.encryptedText">
+          Copy code to clipboard
+        </button>
+        <button mat-raised-button (click)="downloadImage()">
+          Download QR Code
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </form>

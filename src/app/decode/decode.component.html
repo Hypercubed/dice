@@ -51,24 +51,28 @@
     </mat-step>
   </mat-stepper>
 
-  <mat-card
-    class="results-card"
-    *ngIf="vm.decryptionAttempted"
-    matBadge="3"
-    matBadgePosition="before"
-    matBadgeSize="large">
-    <mat-card-content class="result">
-      <mat-error *ngIf="!vm.decryptionSuccess">
-        Decryption Failed. Check pass phase and encrypted text
-      </mat-error>
-      <div class="result__decoded" #decodedElm>
-        {{ vm.decrypted }}
-      </div>
-    </mat-card-content>
-    <mat-card-actions class="result-controls" *ngIf="vm.decryptionSuccess">
-      <button mat-raised-button [cdkCopyToClipboard]="vm.decrypted">
-        Copy text to clipboard
-      </button>
-    </mat-card-actions>
-  </mat-card>
+  <div id="section-to-print">
+    <mat-card
+      class="results-card"
+      *ngIf="vm.decryptionAttempted"
+      matBadge="3"
+      matBadgePosition="before"
+      matBadgeSize="large">
+      <mat-card-content class="result">
+        <mat-error *ngIf="!vm.decryptionSuccess">
+          Decryption Failed. Check pass phase and encrypted text
+        </mat-error>
+        <div class="result__decoded" #decodedElm>
+          {{ vm.decrypted }}
+        </div>
+      </mat-card-content>
+      <mat-card-actions
+        class="result-controls no-print"
+        *ngIf="vm.decryptionSuccess">
+        <button mat-raised-button [cdkCopyToClipboard]="vm.decrypted">
+          Copy text to clipboard
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </form>
