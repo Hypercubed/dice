@@ -49,6 +49,7 @@ export interface EncodeState {
   encodingErrorMessage: string;
   encryptedText: string;
   includeUrl: boolean;
+  errorCorrection: number;
 }
 
 @Injectable()
@@ -104,6 +105,7 @@ export class EncodeStore extends ComponentStore<EncodeState> {
       encryptedText: '',
       encodingErrorMessage: '',
       includeUrl: true,
+      errorCorrection: 3,
     });
   }
 

@@ -6,17 +6,37 @@ app-encode {
     align-items: flex-start;
 
     > * {
-      flex: 0 0 50%;
+      flex: 0 1 50%;
       margin: 0;
       padding: 0;
     }
 
-    &__qr {
-      text-align: center;
+    &__qr-container {
+      display: flex;
 
-      img {
-        margin: auto;
+      &__quality {
+        flex: 0 0 auto;
+        padding: 10px 0;
+
+        mat-slider {
+          height: 100%;
+        }
       }
+
+      &__qr {
+        text-align: center;
+        flex: 1 1 auto;
+        margin: 0;
+        padding: 0;
+
+        img {
+          margin: auto;
+        }
+      }
+    }
+
+    &__check {
+      text-align: center;
     }
 
     &__code {

@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStep } from '@angular/material/stepper';
 import { MatInput } from '@angular/material/input';
 
-import { QRCodeComponent } from 'angularx-qrcode';
+import { QRCodeComponent, QRCodeErrorCorrectionLevel } from 'angularx-qrcode';
 
 // @ts-ignore
 import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
@@ -69,15 +69,23 @@ export class EncodeComponent implements OnInit {
   });
   readonly message = new FormControl('');
   readonly includeUrl = new FormControl(true);
+  readonly errorCorrection = new FormControl(3);
 
   readonly form = new FormGroup({
     password: this.password,
     confirmPassPhase: this.confirmPassPhase,
     message: this.message,
     includeUrl: this.includeUrl,
+    errorCorrection: this.errorCorrection,
   });
 
   readonly maxLength = 300; // maximum allow characters to encode (too many characters will cause the QR code to be too dense)
+  readonly errorCorrectionLevels: Array<QRCodeErrorCorrectionLevel> = [
+    'L',
+    'M',
+    'Q',
+    'H',
+  ];
 
   @ViewChild('step2') private step2!: MatStep;
   @ViewChild('messageInput', { static: false, read: MatInput })
@@ -95,7 +103,9 @@ export class EncodeComponent implements OnInit {
   constructor(
     private readonly store: EncodeStore,
     private readonly snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.formatLabel = this.formatLabel.bind(this);
+  }
 
   ngOnInit() {
     // Clear confirm password field when password field changes
@@ -167,5 +177,9 @@ export class EncodeComponent implements OnInit {
     } catch (err: any) {
       console.error(err.name, err.message);
     }
+  }
+
+  formatLabel(value: number) {
+    return this.errorCorrectionLevels[value];
   }
 }

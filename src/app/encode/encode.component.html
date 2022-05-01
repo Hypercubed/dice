@@ -68,17 +68,36 @@
       matBadgePosition="before"
       matBadgeSize="large">
       <mat-card-content class="result-container">
-        <div class="result-container__qr" *ngIf="vm.qrContent">
-          <div (click)="copyImage()">
-            <qrcode
-              (click)="copyImage()"
-              [allowEmptyString]="true"
-              [qrdata]="vm.qrContent"
-              [width]="256"
-              errorCorrectionLevel="H"
-              elementType="img"></qrcode>
+        <div *ngIf="vm.qrContent">
+          <div class="result-container__qr-container">
+            <div class="result-container__qr-container__quality">
+              <mat-slider
+                class="example-margin"
+                [max]="3"
+                [min]="0"
+                [step]="1"
+                [vertical]="true"
+                [displayWith]="formatLabel"
+                tickInterval="1"
+                [thumbLabel]="true"
+                formControlName="errorCorrection">
+              </mat-slider>
+            </div>
+            <div
+              class="result-container__qr-container__qr"
+              (click)="copyImage()">
+              <qrcode
+                (click)="copyImage()"
+                [allowEmptyString]="true"
+                [qrdata]="vm.qrContent"
+                [width]="256"
+                [errorCorrectionLevel]="
+                  errorCorrectionLevels[vm.errorCorrection]
+                "
+                elementType="img"></qrcode>
+            </div>
           </div>
-          <div>
+          <div class="result-container__check">
             <mat-checkbox formControlName="includeUrl" class="no-print"
               >Include URL in QR code</mat-checkbox
             >
