@@ -209,15 +209,15 @@
     <p>
       <strong>Use OpenSSL to encode: </strong>
       <code ngNonBindable
-        >echo -n "{{secret message}}"" | openssl enc -e -aes-256-cbc -base64 -A
+        >echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -base64 -A
         -pbkdf2</code
       >
     </p>
     <p>
       <strong>Use OpenSSL to decode: </strong>
       <code ngNonBindable
-        >echo -n &quot;{{encrypted message}}&quot; | openssl enc -d -aes-256-cbc
-        -A -base64 -pbkdf2</code
+        >echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -A
+        -base64 -pbkdf2</code
       >
     </p>
   </mat-expansion-panel>
