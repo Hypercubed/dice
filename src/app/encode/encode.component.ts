@@ -30,7 +30,6 @@ import {
   filter,
   delay,
 } from 'rxjs/operators';
-import { of, Subject } from 'rxjs';
 
 import { EncodeStore } from './encode.store';
 

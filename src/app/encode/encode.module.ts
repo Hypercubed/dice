@@ -22,7 +22,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 
 import { EncodeComponent } from './encode.component';
-import { EncodeStore } from './encode.store';
 
 const routes: Routes = [
   {
