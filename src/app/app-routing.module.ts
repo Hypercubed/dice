@@ -7,13 +7,11 @@ const routes: Routes = [
   { path: '', component: InstructionsComponent },
   {
     path: 'encode',
-    loadChildren: () =>
-      import('./encode/encode.module').then((m) => m.AppEncodeModule),
+    loadChildren: () => import('./encode/encode.module').then((m) => m.AppEncodeModule),
   },
   {
     path: 'decode',
-    loadChildren: () =>
-      import('./decode/decode.module').then((m) => m.AppDecodeModule),
+    loadChildren: () => import('./decode/decode.module').then((m) => m.AppDecodeModule),
   },
 ];
 

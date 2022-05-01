@@ -7,10 +7,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { RouterModule, Routes } from '@angular/router';
 import { QRCodeModule } from 'angularx-qrcode';
 
-import {
-  PasswordStrengthMeterModule,
-  PasswordStrengthMeterService,
-} from 'angular-password-strength-meter';
+import { PasswordStrengthMeterModule, PasswordStrengthMeterService } from 'angular-password-strength-meter';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';

@@ -1,32 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation,
-} from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Html5QrcodeScanner } from 'html5-qrcode/esm/html5-qrcode-scanner';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
-import {
-  decode as decodeSafeBase64,
-  isBase64,
-  isUrlSafeBase64,
-} from 'url-safe-base64';
+import { debounceTime, distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
+import { decode as decodeSafeBase64, isBase64, isUrlSafeBase64 } from 'url-safe-base64';
 
-import {
-  ErrorStateMatcher,
-  ShowOnDirtyErrorStateMatcher,
-} from '@angular/material/core';
+import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { MatStep } from '@angular/material/stepper';
 import { MatInput } from '@angular/material/input';
 import { DecodeStore } from './decode.store';
@@ -44,10 +25,7 @@ function cleanup(encoded: string) {
   selector: 'app-decode',
   templateUrl: './decode.component.html',
   styleUrls: ['./decode.component.scss'],
-  providers: [
-    DecodeStore,
-    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
-  ],
+  providers: [DecodeStore, { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher }],
   encapsulation: ViewEncapsulation.None,
 })
 export class DecodeComponent implements OnInit {
@@ -125,15 +103,13 @@ export class DecodeComponent implements OnInit {
       });
 
     setTimeout(() => {
-      this.route.params
-        .pipe(takeUntil(this.store.destroy$))
-        .subscribe((params) => {
-          const param = params['encoded'];
-          if (param && isUrlSafeBase64(param)) {
-            this.onRead(params['encoded']);
-            this.location.replaceState('decode');
-          }
-        });
+      this.route.params.pipe(takeUntil(this.store.destroy$)).subscribe((params) => {
+        const param = params['encoded'];
+        if (param && isUrlSafeBase64(param)) {
+          this.onRead(params['encoded']);
+          this.location.replaceState('decode');
+        }
+      });
     });
   }
 
@@ -163,11 +139,7 @@ export class DecodeComponent implements OnInit {
     }
 
     try {
-      this.html5QrcodeScanner = new Html5QrcodeScanner(
-        'reader',
-        { fps: 10, qrbox: 150 },
-        false
-      );
+      this.html5QrcodeScanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: 150 }, false);
 
       this.html5QrcodeScanner.render((encoded) => {
         this.onRead(encoded);

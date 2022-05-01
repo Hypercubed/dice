@@ -1,16 +1,5 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation,
-} from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ValidatorFn,
-} from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStep } from '@angular/material/stepper';
@@ -21,15 +10,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
 // @ts-ignore
 import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
 
-import {
-  debounceTime,
-  distinctUntilChanged,
-  takeUntil,
-  tap,
-  startWith,
-  filter,
-  delay,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil, tap, startWith, filter, delay } from 'rxjs/operators';
 
 import { EncodeStore } from './encode.store';
 
@@ -86,15 +67,11 @@ export class EncodeComponent implements OnInit {
   private readonly qrCode!: QRCodeComponent;
 
   get svg() {
-    const img: HTMLImageElement =
-      this.qrCode.qrcElement.nativeElement.getElementsByTagName('img')[0];
+    const img: HTMLImageElement = this.qrCode.qrcElement.nativeElement.getElementsByTagName('img')[0];
     return img.getAttribute('src');
   }
 
-  constructor(
-    private readonly store: EncodeStore,
-    private readonly snackBar: MatSnackBar
-  ) {}
+  constructor(private readonly store: EncodeStore, private readonly snackBar: MatSnackBar) {}
 
   ngOnInit() {
     // Clear confirm password field when password field changes
@@ -146,13 +123,9 @@ export class EncodeComponent implements OnInit {
   }
 
   copyImage() {
-    createCanvas(
-      this.svg,
-      'name',
-      (canvas: { toBlob: (arg0: (blob: any) => void) => void }) => {
-        canvas.toBlob((blob: Blob) => this.clip(blob));
-      }
-    );
+    createCanvas(this.svg, 'name', (canvas: { toBlob: (arg0: (blob: any) => void) => void }) => {
+      canvas.toBlob((blob: Blob) => this.clip(blob));
+    });
   }
 
   clip(blob: Blob) {

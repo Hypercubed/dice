@@ -1,11 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  HashLocationStrategy,
-  Location,
-  LocationStrategy,
-} from '@angular/common';
+import { HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,10 +40,7 @@ import { AppDecodeModule } from './decode/decode.module';
     AppEncodeModule,
     AppDecodeModule,
   ],
-  providers: [
-    Location,
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-  ],
+  providers: [Location, { provide: LocationStrategy, useClass: HashLocationStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

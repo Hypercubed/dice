@@ -40,10 +40,7 @@ export class DecodeStore extends ComponentStore<DecodeState> {
     return state.base64Encoded;
   });
 
-  constructor(
-    private readonly crypto: CryptoService,
-    private readonly constantsService: ConstantsService
-  ) {
+  constructor(private readonly crypto: CryptoService, private readonly constantsService: ConstantsService) {
     super({
       passPhase: '',
       passPhaseConfirmed: false,

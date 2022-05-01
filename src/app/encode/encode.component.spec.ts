@@ -13,12 +13,7 @@ xdescribe('EncodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        MatSnackBarModule,
-        FormsModule,
-        ReactiveFormsModule,
-        PasswordStrengthMeterModule,
-      ],
+      imports: [MatSnackBarModule, FormsModule, ReactiveFormsModule, PasswordStrengthMeterModule],
       declarations: [EncodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();

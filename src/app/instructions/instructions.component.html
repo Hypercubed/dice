@@ -1,22 +1,16 @@
 <p>
-  <b>D</b>ecode <b>I</b>n <b>C</b>ase of <b>E</b>mergency (DICE) is a simple
-  online and open-source tool to convert confidential messages into encrypted
-  QRCodes to be decoded in case of emergency (or for any reason whatsoever).
+  <b>D</b>ecode <b>I</b>n <b>C</b>ase of <b>E</b>mergency (DICE) is a simple online and open-source tool to convert
+  confidential messages into encrypted QRCodes to be decoded in case of emergency (or for any reason whatsoever).
 </p>
 
 <p>
-  Messages are encoded using an encryption pass phase and aes-256-cbc
-  encryption, the same as the one used in the
-  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
-    >OpenSSL cli tool</a
-  >
-  (tested with OpenSSL v1.1). All encryption and decryption happens within the
-  browser and never sent to any server. DICE is free and
-  <a href="https://github.com/Hypercubed/dice">open source</a>. Feel free to
-  deploy your own site for this tool; messages can always be decrypted using the
-  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
-    >OpenSSL cli tool</a
-  >
+  Messages are encoded using an encryption pass phase and aes-256-cbc encryption, the same as the one used in the
+  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a>
+  (tested with OpenSSL v1.1). All encryption and decryption happens within the browser and never sent to any server.
+  DICE is free and
+  <a href="https://github.com/Hypercubed/dice">open source</a>. Feel free to deploy your own site for this tool;
+  messages can always be decrypted using the
+  <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a>
   as well.
 </p>
 
@@ -31,9 +25,8 @@
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
       <p>
-        This pass phase is kept secret or shared with your intended
-        recipient(s). Use long passwords and keep it safe. This pass phase
-        cannot be recovered.
+        This pass phase is kept secret or shared with your intended recipient(s). Use long passwords and keep it safe.
+        This pass phase cannot be recovered.
       </p>
     </mat-card-content>
   </mat-card>
@@ -46,12 +39,9 @@
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
       <p>
-        The text will be encrypted using the encryption pass phase you entered.
-        The text is encrypted with aes-256-cbc encryption, the same as the one
-        used in the
-        <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
-          >OpenSSL cli tool</a
-        >.
+        The text will be encrypted using the encryption pass phase you entered. The text is encrypted with aes-256-cbc
+        encryption, the same as the one used in the
+        <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a>.
       </p>
     </mat-card-content>
   </mat-card>
@@ -64,9 +54,8 @@
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
       <p>
-        Copy or download the encrypted text and/or QR Code. These can be
-        embedded in a document, printed and stored in case of emergency. The QR
-        code data includes the encrypted text as well as a link to this site.
+        Copy or download the encrypted text and/or QR Code. These can be embedded in a document, printed and stored in
+        case of emergency. The QR code data includes the encrypted text as well as a link to this site.
       </p>
     </mat-card-content>
   </mat-card>
@@ -82,10 +71,7 @@
     </mat-card-header>
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
-      <p>
-        This is your secret pass phase or one shared with you. Press OK when
-        ready.
-      </p>
+      <p>This is your secret pass phase or one shared with you. Press OK when ready.</p>
     </mat-card-content>
   </mat-card>
 
@@ -97,8 +83,8 @@
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
       <p>
-        Scan the QR code or enter the encrypted text. If you arrived at this
-        site by scanning a QRcode this will be populated already.
+        Scan the QR code or enter the encrypted text. If you arrived at this site by scanning a QRcode this will be
+        populated already.
       </p>
     </mat-card-content>
   </mat-card>
@@ -110,9 +96,7 @@
     </mat-card-header>
     <mat-divider inset="true"></mat-divider>
     <mat-card-content>
-      <p>
-        The text will be decrypted using the encryption pass phase you entered.
-      </p>
+      <p>The text will be decrypted using the encryption pass phase you entered.</p>
     </mat-card-content>
   </mat-card>
 </div>
@@ -125,33 +109,28 @@
       <mat-panel-title> Why should I use DICE? </mat-panel-title>
     </mat-expansion-panel-header>
     <p>
-      DICE is free and open source. No software or installation is required. You
-      can encrypt any text quickly using your own secret pass phase. After the
-      encryption is done, your message will be unreadable without the pass
-      phase. The encryption algorithm is run in the browser. No data is sent or
-      logged. All messages are encrypted using 256-bit AES.
+      DICE is free and open source. No software or installation is required. You can encrypt any text quickly using your
+      own secret pass phase. After the encryption is done, your message will be unreadable without the pass phase. The
+      encryption algorithm is run in the browser. No data is sent or logged. All messages are encrypted using 256-bit
+      AES.
     </p>
     <p>Use this service when you want to...</p>
     <ul>
       <li>Send your sensitive messages to your friends or family.</li>
       <li>Safely encode sensitive information for storage online.</li>
       <li>
-        Safely backup sensitive information to paper for use by yourself or a
-        trusted third party in case of emergency.
+        Safely backup sensitive information to paper for use by yourself or a trusted third party in case of emergency.
       </li>
     </ul>
     <br />
   </mat-expansion-panel>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        Where are the encrypted messages stored?
-      </mat-panel-title>
+      <mat-panel-title> Where are the encrypted messages stored? </mat-panel-title>
     </mat-expansion-panel-header>
     <p>
-      They are not stored by this site at all. If you would like to store the
-      encrypted text or QR codes you will need to copy them to a document for
-      storage or printing.
+      They are not stored by this site at all. If you would like to store the encrypted text or QR codes you will need
+      to copy them to a document for storage or printing.
     </p>
   </mat-expansion-panel>
   <mat-expansion-panel>
@@ -160,31 +139,22 @@
     </mat-expansion-panel-header>
     <p>
       All messages are encrypted using
-      <a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
-        >AES</a
-      >
-      with a 256-bit key length, (trusted by governments and corporations all
-      over the world) along with well known key derivation function
-      <a href="http://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. For the highest
-      level of security use a strong pass phase. Feel free to deploy your own
-      server for this tool or use the OpenSSL cli tool.
+      <a href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a>
+      with a 256-bit key length, (trusted by governments and corporations all over the world) along with well known key
+      derivation function
+      <a href="http://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a>. For the highest level of security use a strong pass
+      phase. Feel free to deploy your own server for this tool or use the OpenSSL cli tool.
     </p>
     <p>We do not store any data about your message or encryption pass phase.</p>
-    <p>
-      We believe this service is safe; however all use is completely at your own
-      risk.
-    </p>
+    <p>We believe this service is safe; however all use is completely at your own risk.</p>
   </mat-expansion-panel>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-panel-title>
-        Can I retrieve a forgotten pass phase?
-      </mat-panel-title>
+      <mat-panel-title> Can I retrieve a forgotten pass phase? </mat-panel-title>
     </mat-expansion-panel-header>
     <p>
-      Nope. Pass phases and messages never leave your browser. There is no
-      backup unless you made it yourself. If you've forgotten, it's gone for
-      good.
+      Nope. Pass phases and messages never leave your browser. There is no backup unless you made it yourself. If you've
+      forgotten, it's gone for good.
     </p>
   </mat-expansion-panel>
   <mat-expansion-panel>
@@ -202,34 +172,19 @@
     </mat-expansion-panel-header>
     <p>
       Messages are encrypted and encoded in the same format as
-      <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities"
-        >OpenSSL cli tool</a
-      >.
+      <a href="https://wiki.openssl.org/index.php/Command_Line_Utilities">OpenSSL cli tool</a>.
     </p>
     <p>
       <strong>Use OpenSSL to encode: </strong>
-      <code ngNonBindable
-        >echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -a -A
-        -pbkdf2</code
-      >
+      <code ngNonBindable>echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -a -A -pbkdf2</code>
     </p>
     <p>
       <strong>Use OpenSSL to decode: </strong>
-      <code ngNonBindable
-        >echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -a -A
-        -pbkdf2</code
-      >
+      <code ngNonBindable>echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -a -A -pbkdf2</code>
     </p>
     <p>
-      <strong
-        >Use OpenSSL and
-        <a href="https://www.npmjs.com/package/qrcode">qrcode</a> to generate a
-        qr code:
-      </strong>
-      <code ngNonBindable
-        >echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -a -A
-        -pbkdf2 | qrcode</code
-      >
+      <strong>Use OpenSSL and <a href="https://www.npmjs.com/package/qrcode">qrcode</a> to generate a qr code: </strong>
+      <code ngNonBindable>echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -a -A -pbkdf2 | qrcode</code>
     </p>
   </mat-expansion-panel>
 </mat-accordion>

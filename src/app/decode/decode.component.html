@@ -38,15 +38,9 @@
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Text to decrypt</mat-label>
         <textarea matInput formControlName="encoded" #encodedInput></textarea>
-        <mat-icon class="camera" matSuffix (click)="toggleReader()"
-          >camera_alt</mat-icon
-        >
-        <mat-error *ngIf="encoded.hasError('invalid')">
-          Unable to recognize encrypted text
-        </mat-error>
-        <mat-error *ngIf="encoded.hasError('invalidFormat')">
-          Unable to identify encoding format
-        </mat-error>
+        <mat-icon class="camera" matSuffix (click)="toggleReader()">camera_alt</mat-icon>
+        <mat-error *ngIf="encoded.hasError('invalid')"> Unable to recognize encrypted text </mat-error>
+        <mat-error *ngIf="encoded.hasError('invalidFormat')"> Unable to identify encoding format </mat-error>
       </mat-form-field>
     </mat-step>
   </mat-stepper>
@@ -59,17 +53,11 @@
       matBadgePosition="before"
       matBadgeSize="large">
       <mat-card-content class="result">
-        <mat-error *ngIf="!vm.decryptionSuccess">
-          Decryption Failed. Check pass phase and encrypted text
-        </mat-error>
+        <mat-error *ngIf="!vm.decryptionSuccess"> Decryption Failed. Check pass phase and encrypted text </mat-error>
         <div class="result__decoded" #decodedElm>{{ vm.decrypted }}</div>
       </mat-card-content>
-      <mat-card-actions
-        class="result-controls no-print"
-        *ngIf="vm.decryptionSuccess">
-        <button mat-raised-button [cdkCopyToClipboard]="vm.decrypted">
-          Copy text to clipboard
-        </button>
+      <mat-card-actions class="result-controls no-print" *ngIf="vm.decryptionSuccess">
+        <button mat-raised-button [cdkCopyToClipboard]="vm.decrypted">Copy text to clipboard</button>
       </mat-card-actions>
     </mat-card>
   </div>

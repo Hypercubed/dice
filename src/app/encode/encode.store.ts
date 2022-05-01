@@ -54,9 +54,7 @@ export interface EncodeState {
 @Injectable()
 export class EncodeStore extends ComponentStore<EncodeState> {
   readonly passPhaseVerified$ = this.select((state) => {
-    return (
-      !!state.confirmPassPhase && state.confirmPassPhase === state.passPhase
-    );
+    return !!state.confirmPassPhase && state.confirmPassPhase === state.passPhase;
   });
 
   readonly encryptedText$ = this.select((state) => {
@@ -119,18 +117,14 @@ export class EncodeStore extends ComponentStore<EncodeState> {
       };
     }
 
-    const { score, feedback } =
-      this.passwordStrengthMeterService.scoreWithFeedback(passPhase);
+    const { score, feedback } = this.passwordStrengthMeterService.scoreWithFeedback(passPhase);
 
     return {
       ...state,
       confirmPassPhase: '',
       passPhaseVerified: false,
       passPhase,
-      passPhaseHint: cleanJoin([
-        `Pass phase is ${SCORE_TEXT[score]}`,
-        feedback?.warning,
-      ]),
+      passPhaseHint: cleanJoin([`Pass phase is ${SCORE_TEXT[score]}`, feedback?.warning]),
       passPhaseSuggestions: cleanJoin(feedback?.suggestions || []),
     };
   });

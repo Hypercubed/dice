@@ -91,9 +91,7 @@ export class CryptoService {
     const keyIv = PBKDF2.compute(password, salt);
 
     const key = WordArray.create(keyIv.words.slice(0, KEY_WORDS));
-    const iv = WordArray.create(
-      keyIv.words.slice(KEY_WORDS, keyIv.words.length)
-    );
+    const iv = WordArray.create(keyIv.words.slice(KEY_WORDS, keyIv.words.length));
 
     return [key, iv];
   }
