@@ -62,9 +62,7 @@
         <mat-error *ngIf="!vm.decryptionSuccess">
           Decryption Failed. Check pass phase and encrypted text
         </mat-error>
-        <div class="result__decoded" #decodedElm>
-          {{ vm.decrypted }}
-        </div>
+        <div class="result__decoded" #decodedElm>{{ vm.decrypted }}</div>
       </mat-card-content>
       <mat-card-actions
         class="result-controls no-print"

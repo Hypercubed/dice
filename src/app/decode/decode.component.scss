@@ -17,6 +17,8 @@ app-decode {
       margin: 20px 0 !important;
       word-wrap: break-word;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      text-align: left;
     }
 
     &-controls {
