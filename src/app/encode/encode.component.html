@@ -60,53 +60,82 @@
     </mat-step>
   </mat-stepper>
 
-  <div id="section-to-print">
+  <div
+    id="section-to-print"
+    class="results-card"
+    *ngIf="vm.encryptedText"
+    matBadge="3"
+    matBadgePosition="before"
+    matBadgeSize="large">
+    <mat-drawer-container [hasBackdrop]="false">
+      <mat-drawer #drawer mode="push" position="start">
+        <div>
+          <label>Error Correction</label><br />
+          <mat-slider
+            class="example-margin"
+            [max]="3"
+            [min]="0"
+            [step]="1"
+            [vertical]="false"
+            [displayWith]="formatLabel"
+            tickInterval="1"
+            [thumbLabel]="true"
+            formControlName="errorCorrection">
+          </mat-slider>
+        </div>
+        <div>
+          <mat-checkbox formControlName="includeUrl" class="no-print"
+            >Include URL in QR code</mat-checkbox
+          >
+        </div>
+      </mat-drawer>
+      <mat-drawer-content>
+        <button mat-icon-button (click)="drawer.toggle()">
+          <mat-icon>settings</mat-icon>
+        </button>
+        <div class="result-container">
+          <div
+            *ngIf="vm.qrContent"
+            class="result-container__qr"
+            (click)="copyImage()">
+            <qrcode
+              (click)="copyImage()"
+              [allowEmptyString]="true"
+              [qrdata]="vm.qrContent"
+              [width]="256"
+              [errorCorrectionLevel]="errorCorrectionLevels[vm.errorCorrection]"
+              elementType="img"></qrcode>
+          </div>
+          <div class="result-container__code">
+            {{ vm.encryptedText }}
+          </div>
+        </div>
+        <div class="result-controls no-print">
+          <button mat-raised-button (click)="copyImage()">
+            Copy QRCode to clipboard
+          </button>
+          <button mat-raised-button [cdkCopyToClipboard]="vm.encryptedText">
+            Copy code to clipboard
+          </button>
+          <button mat-raised-button (click)="downloadImage()">
+            Download QR Code
+          </button>
+        </div>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </div>
+
+  <!-- <div id="section-to-print">
     <mat-card
       class="results-card"
       *ngIf="vm.encryptedText"
       matBadge="3"
       matBadgePosition="before"
       matBadgeSize="large">
-      <mat-card-content class="result-container">
-        <div *ngIf="vm.qrContent">
-          <div class="result-container__qr-container">
-            <div class="result-container__qr-container__quality">
-              <mat-slider
-                class="example-margin"
-                [max]="3"
-                [min]="0"
-                [step]="1"
-                [vertical]="true"
-                [displayWith]="formatLabel"
-                tickInterval="1"
-                [thumbLabel]="true"
-                formControlName="errorCorrection">
-              </mat-slider>
-            </div>
-            <div
-              class="result-container__qr-container__qr"
-              (click)="copyImage()">
-              <qrcode
-                (click)="copyImage()"
-                [allowEmptyString]="true"
-                [qrdata]="vm.qrContent"
-                [width]="256"
-                [errorCorrectionLevel]="
-                  errorCorrectionLevels[vm.errorCorrection]
-                "
-                elementType="img"></qrcode>
-            </div>
-          </div>
-          <div class="result-container__check">
-            <mat-checkbox formControlName="includeUrl" class="no-print"
-              >Include URL in QR code</mat-checkbox
-            >
-          </div>
-        </div>
-        <div class="result-container__code">
-          {{ vm.encryptedText }}
-        </div>
+      <mat-card-content>
+
       </mat-card-content>
+
       <mat-card-actions class="result-controls no-print">
         <button mat-raised-button (click)="copyImage()">
           Copy QRCode to clipboard
@@ -119,5 +148,5 @@
         </button>
       </mat-card-actions>
     </mat-card>
-  </div>
+  </div> -->
 </form>

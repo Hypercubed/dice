@@ -1,4 +1,26 @@
 app-encode {
+  .mat-drawer {
+    padding: 20px;
+    width: 50%;
+    background-color: #ffffff;
+  }
+
+  .mat-drawer-content {
+    background-color: #ffffff;
+  }
+
+  .mat-slider {
+    width: 100%;
+  }
+
+  .mat-drawer-inner-container {
+    overflow: VISIBLE;
+  }
+
+  .mat-badge-content {
+    z-index: 1;
+  }
+
   .result-container {
     width: 100%;
     display: flex;
@@ -11,32 +33,15 @@ app-encode {
       padding: 0;
     }
 
-    &__qr-container {
-      display: flex;
-
-      &__quality {
-        flex: 0 0 auto;
-        padding: 10px 0;
-
-        mat-slider {
-          height: 100%;
-        }
-      }
-
-      &__qr {
-        text-align: center;
-        flex: 1 1 auto;
-        margin: 0;
-        padding: 0;
-
-        img {
-          margin: auto;
-        }
-      }
-    }
-
-    &__check {
+    &__qr {
       text-align: center;
+      flex: 1 1 auto;
+      margin: 0;
+      padding: 0;
+
+      img {
+        margin: auto;
+      }
     }
 
     &__code {
@@ -50,6 +55,7 @@ app-encode {
         #e3e3e3 3em
       );
       line-height: 1.5em;
+      margin: 0 1em;
       padding: 0 1em;
       text-align: justify;
     }
@@ -66,7 +72,7 @@ app-encode {
     text-align: center;
 
     > button {
-      margin-top: 10px !important;
+      margin: 10px 5px;
     }
   }
 

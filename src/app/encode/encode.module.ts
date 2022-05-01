@@ -21,6 +21,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { EncodeComponent } from './encode.component';
 
@@ -51,6 +52,7 @@ const routes: Routes = [
     MatTooltipModule,
     MatBadgeModule,
     MatSliderModule,
+    MatSidenavModule,
     QRCodeModule,
   ],
   exports: [RouterModule],
