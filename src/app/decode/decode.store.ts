@@ -36,7 +36,6 @@ export class DecodeStore extends ComponentStore<DecodeState> {
   }));
 
   readonly base64Encoded$ = this.select((state) => {
-    console.log('select base64Encoded');
     return state.base64Encoded;
   });
 

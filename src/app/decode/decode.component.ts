@@ -11,6 +11,7 @@ import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/materi
 import { MatStep } from '@angular/material/stepper';
 import { MatInput } from '@angular/material/input';
 import { DecodeStore } from './decode.store';
+import { CryptoService } from '../crypto.service';
 
 // move to utils
 function cleanup(encoded: string) {
@@ -51,7 +52,8 @@ export class DecodeComponent implements OnInit {
   constructor(
     private readonly store: DecodeStore,
     private readonly route: ActivatedRoute,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly crypto: CryptoService
   ) {}
 
   ngOnInit() {
@@ -79,15 +81,11 @@ export class DecodeComponent implements OnInit {
         tap((encoded) => {
           encoded = cleanup(encoded);
 
-          // TODO: move to validators
-          const invalid = !isBase64(encoded);
-          const invalidFormat = !encoded.startsWith('U2FsdGVkX1');
-          const hasError = invalid || invalidFormat;
+          let invalidFormat = !this.crypto.getMethod(encoded);
 
           this.encoded.setErrors(
-            hasError
+            invalidFormat
               ? {
-                  invalid,
                   invalidFormat,
                 }
               : null
