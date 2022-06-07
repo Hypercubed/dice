@@ -44,7 +44,7 @@
     "angular-password-strength-meter": "^3.0.1",
     "angularx-qrcode": "^13.0.14",
     "crypto-js": "^4.1.1",
-    "html5-qrcode": "^2.2.0",
+    "html5-qrcode": "2.2.1",
     "ismobilejs": "^1.1.1",
     "material-design-icons": "^3.0.1",
     "qrcode-svg": "^1.1.0",
