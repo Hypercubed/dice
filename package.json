@@ -42,7 +42,7 @@
     "@ngrx/component-store": "^13.1.0",
     "@nrwl/angular": "^13.9.6",
     "angular-password-strength-meter": "^3.0.1",
-    "angularx-qrcode": "^13.0.14",
+    "angularx-qrcode": "13.0.15",
     "crypto-js": "^4.1.1",
     "html5-qrcode": "^2.2.0",
     "ismobilejs": "^1.1.1",
