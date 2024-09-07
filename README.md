@@ -4,6 +4,8 @@ Decode in case of Emergency (DICE) is a simple online and open-source tool to co
 
 Messages are encoded using an encryption password and aes-256-cbc encryption, the same as the one used in the [OpenSSL cli tool](https://wiki.openssl.org/index.php/Command_Line_Utilities). All encryption and decryption happens within the browser and never sent to any server. Feel free to deploy your own server for this tool but don't worry messages can always be decrypted using the OpenSSL cli tool.
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/hypercubed)
+
 ## How to use
 
 DICE is designed to be easily deployed to any static hosting sites. Feel free to clone and deploy DICE to your own site or use one of the following deployments:
@@ -45,6 +47,25 @@ secret message
 
 > **Note:** The `echo` command on Windows/DOS may look a little different. Try removing the `-n` flag and quotes.
 
-## License
+## License (The MIT License)
 
-This project is licensed under the MIT License - see the LICENSE file for details
+Copyright (c) 2022-2024 J. Harshbarger
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
