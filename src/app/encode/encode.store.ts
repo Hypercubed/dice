@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { PasswordStrengthMeterService } from 'angular-password-strength-meter';
+import { IPasswordStrengthMeterService } from 'angular-password-strength-meter';
 import { Location } from '@angular/common';
 
 import { encode } from 'url-safe-base64';
@@ -87,7 +87,7 @@ export class EncodeStore extends ComponentStore<EncodeState> {
   );
 
   constructor(
-    private readonly passwordStrengthMeterService: PasswordStrengthMeterService,
+    private readonly passwordStrengthMeterService: IPasswordStrengthMeterService,
     private readonly crypto: CryptoService,
     private readonly location: Location,
     private readonly constantsService: ConstantsService
