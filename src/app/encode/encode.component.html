@@ -32,7 +32,7 @@
         <mat-label>Text to encrypt</mat-label>
         <textarea matInput rows="4" formControlName="message" [maxLength]="maxLength" #messageInput></textarea>
         <mat-hint>Enter text to encrypt</mat-hint>
-        <mat-hint align="end">{{ messageInput.value?.length || 0 }}/{{ maxLength }}</mat-hint>
+        <mat-hint align="end">{{ messageInput.value.length || 0 }}/{{ maxLength }}</mat-hint>
       </mat-form-field>
     </mat-step>
   </mat-stepper>

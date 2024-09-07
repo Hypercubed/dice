@@ -21,8 +21,6 @@
       }
     }
   },
-  "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
-  },
-  "defaultProject": "dice"
+  "defaultProject": "dice",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }

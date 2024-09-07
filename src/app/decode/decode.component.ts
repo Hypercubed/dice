@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -31,10 +31,10 @@ function cleanup(encoded: string) {
 export class DecodeComponent implements OnInit {
   vm$ = this.store.vm$;
 
-  passPhase = new FormControl('');
-  encoded = new FormControl('');
+  passPhase = new UntypedFormControl('');
+  encoded = new UntypedFormControl('');
 
-  form = new FormGroup({
+  form = new UntypedFormGroup({
     passPhase: this.passPhase,
     encoded: this.encoded,
   });

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStep } from '@angular/material/stepper';
@@ -42,15 +42,15 @@ function confirmValidator(password: AbstractControl): ValidatorFn {
 export class EncodeComponent implements OnInit {
   vm$ = this.store.vm$;
 
-  readonly password = new FormControl('');
-  readonly confirmPassPhase = new FormControl('', {
+  readonly password = new UntypedFormControl('');
+  readonly confirmPassPhase = new UntypedFormControl('', {
     validators: [confirmValidator(this.password)],
     updateOn: 'change',
   });
-  readonly message = new FormControl('');
-  readonly includeUrl = new FormControl(true);
+  readonly message = new UntypedFormControl('');
+  readonly includeUrl = new UntypedFormControl(true);
 
-  readonly form = new FormGroup({
+  readonly form = new UntypedFormGroup({
     password: this.password,
     confirmPassPhase: this.confirmPassPhase,
     message: this.message,
