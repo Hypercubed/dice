@@ -1,7 +1,4 @@
 {
-  "affected": {
-    "defaultBase": "main"
-  },
   "defaultProject": "dice",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
@@ -30,5 +27,7 @@
       "cache": true
     }
   },
-  "nxCloudAccessToken": "NGU1MmY5MjYtYzAwYS00NjMyLWIzOTktYTJmN2M3NzhhMGExfHJlYWQtd3JpdGU="
+  "nxCloudAccessToken": "NGU1MmY5MjYtYzAwYS00NjMyLWIzOTktYTJmN2M3NzhhMGExfHJlYWQtd3JpdGU=",
+  "useInferencePlugins": false,
+  "defaultBase": "main"
 }
