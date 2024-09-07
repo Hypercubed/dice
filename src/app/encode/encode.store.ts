@@ -124,7 +124,7 @@ export class EncodeStore extends ComponentStore<EncodeState> {
       confirmPassPhase: '',
       passPhaseVerified: false,
       passPhase,
-      passPhaseHint: cleanJoin([`Pass phase is ${SCORE_TEXT[score]}`, feedback?.warning]),
+      passPhaseHint: cleanJoin([`Pass phase is ${SCORE_TEXT[score || 0]}`, feedback?.warning || '']),
       passPhaseSuggestions: cleanJoin(feedback?.suggestions || []),
     };
   });

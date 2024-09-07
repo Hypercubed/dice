@@ -6,8 +6,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
-import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
-
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,7 +36,6 @@ const routes: Routes = [
     ReactiveFormsModule,
     ClipboardModule,
     MatCheckboxModule,
-    PasswordStrengthMeterModule,
     MatCardModule,
     MatInputModule,
     MatButtonModule,

@@ -18,8 +18,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { AppEncodeModule } from './encode/encode.module';
 import { AppDecodeModule } from './decode/decode.module';
-import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
-import { DEFAULT_PSM_OPTIONS } from 'angular-password-strength-meter/zxcvbn';
+import { provideZxvbnServiceForPSM } from 'angular-password-strength-meter/zxcvbn';
 
 @NgModule({
   declarations: [AppComponent, InstructionsComponent],
@@ -33,7 +32,7 @@ import { DEFAULT_PSM_OPTIONS } from 'angular-password-strength-meter/zxcvbn';
     MatCardModule,
     MatDividerModule,
     MatExpansionModule,
-    PasswordStrengthMeterModule.forRoot(DEFAULT_PSM_OPTIONS),
+    // PasswordStrengthMeterModule.forRoot(DEFAULT_PSM_OPTIONS),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -43,7 +42,7 @@ import { DEFAULT_PSM_OPTIONS } from 'angular-password-strength-meter/zxcvbn';
     AppEncodeModule,
     AppDecodeModule,
   ],
-  providers: [Location, { provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [Location, { provide: LocationStrategy, useClass: HashLocationStrategy }, provideZxvbnServiceForPSM()],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
