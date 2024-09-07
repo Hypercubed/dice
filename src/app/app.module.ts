@@ -18,6 +18,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { AppEncodeModule } from './encode/encode.module';
 import { AppDecodeModule } from './decode/decode.module';
+import { PasswordStrengthMeterModule } from 'angular-password-strength-meter';
 
 @NgModule({
   declarations: [AppComponent, InstructionsComponent],
@@ -31,6 +32,7 @@ import { AppDecodeModule } from './decode/decode.module';
     MatCardModule,
     MatDividerModule,
     MatExpansionModule,
+    PasswordStrengthMeterModule.forRoot(),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable

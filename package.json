@@ -41,7 +41,7 @@
     "@angular/service-worker": "13.3.12",
     "@ngrx/component-store": "^13.1.0",
     "@nrwl/angular": "14.1.9",
-    "angular-password-strength-meter": "^3.0.1",
+    "angular-password-strength-meter": "^4.3.1",
     "angularx-qrcode": "^13.0.14",
     "crypto-js": "^4.1.1",
     "html5-qrcode": "^2.2.0",
