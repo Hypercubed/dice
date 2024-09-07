@@ -1,10 +1,27 @@
 # Dice
 
+Tired of worrying about your sensitive data getting into the wrong hands? DICE is here to provide a secure and convenient solution.
+
 Decode in case of Emergency (DICE) is a simple online and open-source tool to convert confidential messages into encrypted QRCodes to be decoded in case of emergency.
 
 Messages are encoded using an encryption password and aes-256-cbc encryption, the same as the one used in the [OpenSSL cli tool](https://wiki.openssl.org/index.php/Command_Line_Utilities). All encryption and decryption happens within the browser and never sent to any server. Feel free to deploy your own server for this tool but don't worry messages can always be decrypted using the OpenSSL cli tool.
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/hypercubed)
+
+## Use Case
+
+Protect Your Offline Secrets and Emergency Messages:
+
+- **Backup Codes**: Generate QR codes for your two-factor authentication backup codes. Print them and store them in a safe place.
+- **Passwords**: Create QR codes for your most important passwords. Scan them with DICE when needed, ensuring secure and offline access.
+- **Emergency Messages**: Encrypt and store important messages for loved ones in case of an emergency.
+
+## Key Benefits
+
+- **Industry-Standard Encryption**: DICE uses proven encryption methods, ensuring the highest level of security for your data.
+- **Decodable with Common Tools**: Your DICE-encrypted data can be decoded using widely available command-line tools, giving you flexibility and control.
+- **Open-Source and Transparent**: DICE is completely open-source, allowing you to inspect and verify its code.
+- **Offline PWA for Mobile and Desktop**: Run DICE as a Progressive Web App (PWA) for a standalone, offline-capable experience on both mobile and desktop devices.
 
 ## How to use
 
@@ -46,6 +63,16 @@ secret message
 > **Note:** The `openssl` command on MacOS may point to LibreSSL. If so you may need to install OpenSSL.
 
 > **Note:** The `echo` command on Windows/DOS may look a little different. Try removing the `-n` flag and quotes.
+
+## More About DICE
+
+DICE was created by Jayson Harshbarger (Hypercubed).  Born out of a personal need for a secure and reliable way to store sensitive information offline.  As someone who values control over my data, I found existing solutions lacking in either security or convenience.
+
+I began developing DICE several years ago and have used it personally to protect my backup codes, and other confidential information. The experience has been invaluable, and I've witnessed firsthand how it can safeguard your digital life.
+
+Driven by a desire to share this tool with others, I decided to release DICE as open-source. By making it freely available, I hope to empower individuals to take control of their digital security and protect their privacy.
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/hypercubed)
 
 ## License (The MIT License)
 
