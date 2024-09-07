@@ -20,5 +20,9 @@
         "accessToken": "NGU1MmY5MjYtYzAwYS00NjMyLWIzOTktYTJmN2M3NzhhMGExfHJlYWQtd3JpdGU="
       }
     }
-  }
+  },
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  },
+  "defaultProject": "dice"
 }
