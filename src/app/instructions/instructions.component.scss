@@ -50,6 +50,10 @@ app-instructions {
       }
     }
   }
+
+  .mat-mdc-card-header-text {
+    flex: 0 0 100%;
+  }
 }
 
 @media (max-width: 768px) {

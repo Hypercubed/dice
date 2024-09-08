@@ -22,13 +22,7 @@ app-encode {
     &__code {
       font-family: monospace, monospace;
       box-sizing: border-box;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        white,
-        white 1.5em,
-        #e3e3e3 1.5em,
-        #e3e3e3 3em
-      );
+      background-image: repeating-linear-gradient(to bottom, white, white 1.5em, #e3e3e3 1.5em, #e3e3e3 3em);
       line-height: 1.5em;
       padding: 0 1em;
       text-align: justify;
@@ -53,7 +47,7 @@ app-encode {
   .main-password {
     password-strength-meter {
       position: absolute;
-      bottom: -1px;
+      bottom: 2px;
       left: -10px;
       right: -10px;
 
@@ -64,6 +58,10 @@ app-encode {
 
     .mat-form-field-underline {
       display: none !important;
+    }
+
+    .psm__progress-bar {
+      margin: 0;
     }
   }
 

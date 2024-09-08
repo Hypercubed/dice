@@ -48,3 +48,7 @@ Thumbs.db
 # NX
 .nx
 migrations.json
+
+# Local Netlify folder
+.netlify
+.vercel
