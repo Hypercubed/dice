@@ -19,7 +19,7 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/named-cache-storage.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/named-cache-storage.mjs
   var NamedCacheStorage = class {
     constructor(original, cacheNamePrefix) {
       this.original = original;
@@ -46,7 +46,7 @@
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/adapter.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/adapter.mjs
   var Adapter = class {
     constructor(scopeUrl, caches) {
       this.scopeUrl = scopeUrl;
@@ -84,7 +84,7 @@
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/database.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/database.mjs
   var NotFound = class {
     constructor(table, key) {
       this.table = table;
@@ -92,7 +92,7 @@
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/db-cache.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/db-cache.mjs
   var CacheDatabase = class {
     constructor(adapter2) {
       this.adapter = adapter2;
@@ -135,7 +135,7 @@
       return this.cache.delete(this.request(key), this.cacheQueryOptions);
     }
     keys() {
-      return this.cache.keys().then((requests) => requests.map((req) => req.url.substr(1)));
+      return this.cache.keys().then((requests) => requests.map((req) => req.url.slice(1)));
     }
     read(key) {
       return this.cache.match(this.request(key), this.cacheQueryOptions).then((res) => {
@@ -150,7 +150,7 @@
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/api.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/api.mjs
   var UpdateCacheStatus;
   (function(UpdateCacheStatus2) {
     UpdateCacheStatus2[UpdateCacheStatus2["NOT_CACHED"] = 0] = "NOT_CACHED";
@@ -158,7 +158,7 @@
     UpdateCacheStatus2[UpdateCacheStatus2["CACHED"] = 2] = "CACHED";
   })(UpdateCacheStatus || (UpdateCacheStatus = {}));
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/error.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/error.mjs
   var SwCriticalError = class extends Error {
     constructor() {
       super(...arguments);
@@ -180,7 +180,7 @@ ${error.stack}`;
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/sha1.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/sha1.mjs
   function sha1(str) {
     const utf8 = str;
     const words32 = stringToWords32(utf8, Endian.Big);
@@ -295,7 +295,7 @@ ${error.stack}`;
     return hex.toLowerCase();
   }
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/assets.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/assets.mjs
   var AssetGroup = class {
     constructor(scope2, adapter2, idle, config, hashes, db, cacheNamePrefix) {
       this.scope = scope2;
@@ -331,17 +331,19 @@ ${error.stack}`;
       return UpdateCacheStatus.CACHED;
     }
     async getCacheNames() {
-      const [cache, metadata] = await Promise.all([
-        this.cache,
-        this.metadata
-      ]);
+      const [cache, metadata] = await Promise.all([this.cache, this.metadata]);
       return [cache.name, metadata.cacheName];
     }
     async handleFetch(req, _event) {
       const url = this.adapter.normalizeUrl(req.url);
       if (this.urls.indexOf(url) !== -1 || this.patterns.some((pattern) => pattern.test(url))) {
         const cache = await this.cache;
-        const cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+        let cachedResponse;
+        try {
+          cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+        } catch (error) {
+          throw new SwCriticalError(`Cache is throwing while looking for a match: ${error}`);
+        }
         if (cachedResponse !== void 0) {
           if (this.hashes.has(url)) {
             return cachedResponse;
@@ -354,7 +356,7 @@ ${error.stack}`;
             return cachedResponse;
           }
         }
-        const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url));
+        const res = await this.fetchAndCacheOnce(this.newRequestWithMetadata(req.url, req));
         return res.clone();
       } else {
         return null;
@@ -451,7 +453,7 @@ ${error.stack}`;
         if (redirectLimit === 0) {
           throw new SwCriticalError(`Response hit redirect limit (fetchFromNetwork): request redirected too many times, next is ${res.url}`);
         }
-        return this.fetchFromNetwork(this.adapter.newRequest(res.url), redirectLimit - 1);
+        return this.fetchFromNetwork(this.newRequestWithMetadata(res.url, req), redirectLimit - 1);
       }
       return res;
     }
@@ -466,7 +468,7 @@ ${error.stack}`;
           makeCacheBustedRequest = fetchedHash !== canonicalHash;
         }
         if (makeCacheBustedRequest) {
-          const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url));
+          const cacheBustReq = this.newRequestWithMetadata(this.cacheBust(req.url), req);
           response = await this.safeFetch(cacheBustReq);
           if (response.ok) {
             const cacheBustedHash = sha1Binary(await response.clone().arrayBuffer());
@@ -495,6 +497,9 @@ ${error.stack}`;
       }
       return false;
     }
+    newRequestWithMetadata(url, options) {
+      return this.adapter.newRequest(url, { headers: options.headers });
+    }
     cacheBust(url) {
       return url + (url.indexOf("?") === -1 ? "?" : "&") + "ngsw-cache-bust=" + Math.random();
     }
@@ -515,7 +520,12 @@ ${error.stack}`;
       await this.urls.reduce(async (previous, url) => {
         await previous;
         const req = this.adapter.newRequest(url);
-        const alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        let alreadyCached = false;
+        try {
+          alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        } catch (error) {
+          throw new SwCriticalError(`Cache is throwing while looking for a match in a PrefetchAssetGroup: ${error}`);
+        }
         if (alreadyCached) {
           return;
         }
@@ -552,7 +562,12 @@ ${error.stack}`;
       await this.urls.reduce(async (previous, url) => {
         await previous;
         const req = this.adapter.newRequest(url);
-        const alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        let alreadyCached = false;
+        try {
+          alreadyCached = await cache.match(req, this.config.cacheQueryOptions) !== void 0;
+        } catch (error) {
+          throw new SwCriticalError(`Cache is throwing while looking for a match in a LazyAssetGroup: ${error}`);
+        }
         if (alreadyCached) {
           return;
         }
@@ -568,7 +583,7 @@ ${error.stack}`;
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/data.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/data.mjs
   var LruList = class {
     constructor(state) {
       if (state === void 0) {
@@ -709,12 +724,14 @@ ${error.stack}`;
       }
     }
     async handleFetchWithPerformance(req, event, lru) {
+      var _a;
+      const okToCacheOpaque = (_a = this.config.cacheOpaqueResponses) != null ? _a : false;
       let res = null;
       const fromCache = await this.loadFromCache(req, lru);
       if (fromCache !== null) {
         res = fromCache.res;
         if (this.config.refreshAheadMs !== void 0 && fromCache.age >= this.config.refreshAheadMs) {
-          event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru));
+          event.waitUntil(this.safeCacheResponse(req, this.safeFetch(req), lru, okToCacheOpaque));
         }
       }
       if (res !== null) {
@@ -724,13 +741,15 @@ ${error.stack}`;
       res = await timeoutFetch;
       if (res === void 0) {
         res = this.adapter.newResponse(null, { status: 504, statusText: "Gateway Timeout" });
-        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru));
+        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
       } else {
-        await this.safeCacheResponse(req, res, lru);
+        await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
       }
       return res;
     }
     async handleFetchWithFreshness(req, event, lru) {
+      var _a;
+      const okToCacheOpaque = (_a = this.config.cacheOpaqueResponses) != null ? _a : true;
       const [timeoutFetch, networkFetch] = this.networkFetchWithTimeout(req);
       let res;
       try {
@@ -739,11 +758,11 @@ ${error.stack}`;
         res = void 0;
       }
       if (res === void 0) {
-        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, true));
+        event.waitUntil(this.safeCacheResponse(req, networkFetch, lru, okToCacheOpaque));
         const fromCache = await this.loadFromCache(req, lru);
         res = fromCache !== null ? fromCache.res : null;
       } else {
-        await this.safeCacheResponse(req, res, lru, true);
+        await this.safeCacheResponse(req, res, lru, okToCacheOpaque);
       }
       if (res !== null) {
         return res;
@@ -858,13 +877,16 @@ ${error.stack}`;
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/app-version.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/app-version.mjs
   var BACKWARDS_COMPATIBILITY_NAVIGATION_URLS = [
     { positive: true, regex: "^/.*$" },
     { positive: false, regex: "^/.*\\.[^/]*$" },
     { positive: false, regex: "^/.*__" }
   ];
   var AppVersion = class {
+    get okay() {
+      return this._okay;
+    }
     constructor(scope2, adapter2, database, idle, debugHandler, manifest, manifestHash) {
       this.scope = scope2;
       this.adapter = adapter2;
@@ -873,8 +895,8 @@ ${error.stack}`;
       this.manifest = manifest;
       this.manifestHash = manifestHash;
       this.hashTable = /* @__PURE__ */ new Map();
-      this.indexUrl = this.adapter.normalizeUrl(this.manifest.index);
       this._okay = true;
+      this.indexUrl = this.adapter.normalizeUrl(this.manifest.index);
       Object.keys(manifest.hashTable).forEach((url) => {
         this.hashTable.set(adapter2.normalizeUrl(url), manifest.hashTable[url]);
       });
@@ -895,9 +917,6 @@ ${error.stack}`;
         include: includeUrls.map((spec) => new RegExp(spec.regex)),
         exclude: excludeUrls.map((spec) => new RegExp(spec.regex))
       };
-    }
-    get okay() {
-      return this._okay;
     }
     async initializeFully(updateFrom) {
       try {
@@ -943,14 +962,14 @@ ${error.stack}`;
       return null;
     }
     isNavigationRequest(req) {
-      if (req.mode !== "navigate") {
+      if (req.method !== "GET" || req.mode !== "navigate") {
         return false;
       }
       if (!this.acceptsTextHtml(req)) {
         return false;
       }
       const urlPrefix = this.scope.registration.scope.replace(/\/$/, "");
-      const url = req.url.startsWith(urlPrefix) ? req.url.substr(urlPrefix.length) : req.url;
+      const url = req.url.startsWith(urlPrefix) ? req.url.slice(urlPrefix.length) : req.url;
       const urlWithoutQueryOrHash = url.replace(/[?#].*$/, "");
       return this.navigationUrls.include.some((regex) => regex.test(urlWithoutQueryOrHash)) && !this.navigationUrls.exclude.some((regex) => regex.test(urlWithoutQueryOrHash));
     }
@@ -1009,8 +1028,8 @@ ${error.stack}`;
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
-  var SW_VERSION = "13.3.0";
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/debug.mjs
+  var SW_VERSION = "17.3.9";
   var DEBUG_LOG_BUFFER_SIZE = 100;
   var DebugHandler = class {
     constructor(driver, adapter2) {
@@ -1083,7 +1102,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/idle.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/idle.mjs
   var IdleScheduler = class {
     constructor(adapter2, delay, maxDelay, debug) {
       this.adapter = adapter2;
@@ -1161,12 +1180,12 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/manifest.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/manifest.mjs
   function hashManifest(manifest) {
     return sha1(JSON.stringify(manifest));
   }
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/msg.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/msg.mjs
   function isMsgCheckForUpdates(msg) {
     return msg.action === "CHECK_FOR_UPDATES";
   }
@@ -1174,7 +1193,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     return msg.action === "ACTIVATE_UPDATE";
   }
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/driver.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/src/driver.mjs
   var IDLE_DELAY = 5e3;
   var MAX_IDLE_DELAY = 3e4;
   var SUPPORTED_CONFIG_VERSION = 1;
@@ -1215,8 +1234,8 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       this.lastUpdateCheck = null;
       this.scheduledNavUpdateCheck = false;
       this.loggedInvalidOnlyIfCachedRequest = false;
-      this.ngswStatePath = this.adapter.parseUrl("ngsw/state", this.scope.registration.scope).path;
       this.controlTable = this.db.open("control");
+      this.ngswStatePath = this.adapter.parseUrl("ngsw/state", this.scope.registration.scope).path;
       this.scope.addEventListener("install", (event) => {
         event.waitUntil(this.scope.skipWaiting());
       });
@@ -1366,6 +1385,10 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           }
           break;
         }
+        case "sendRequest": {
+          await this.scope.fetch(urlToOpen);
+          break;
+        }
         default:
           break;
       }
@@ -1403,12 +1426,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
       this.clientVersionMap.set(client.id, this.latestHash);
       await this.sync();
       const current = this.versions.get(this.latestHash);
-      const notice = {
-        type: "UPDATE_ACTIVATED",
-        previous,
-        current: this.mergeHashWithAppData(current.manifest, this.latestHash)
-      };
-      client.postMessage(notice);
       return true;
     }
     async handleFetch(event) {
@@ -1505,7 +1522,6 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
           await this.scheduleInitialization(this.versions.get(hash));
         } catch (err) {
           this.debugger.log(err, `initialize: schedule init of ${hash}`);
-          return false;
         }
       }));
     }
@@ -1628,6 +1644,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         }
         hash = hashManifest(manifest);
         if (this.versions.has(hash)) {
+          await this.notifyClientsAboutNoNewVersionDetected(manifest, hash);
           return false;
         }
         await this.notifyClientsAboutVersionDetected(manifest, hash);
@@ -1736,6 +1753,16 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         });
       }));
     }
+    async notifyClientsAboutNoNewVersionDetected(manifest, hash) {
+      await this.initialized;
+      const clients = await this.scope.clients.matchAll();
+      await Promise.all(clients.map(async (client) => {
+        client.postMessage({
+          type: "NO_NEW_VERSION_DETECTED",
+          version: this.mergeHashWithAppData(manifest, hash)
+        });
+      }));
+    }
     async notifyClientsAboutVersionDetected(manifest, hash) {
       await this.initialized;
       const clients = await this.scope.clients.matchAll();
@@ -1744,7 +1771,10 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
         if (version === void 0) {
           return;
         }
-        client.postMessage({ type: "VERSION_DETECTED", version: this.mergeHashWithAppData(manifest, hash) });
+        client.postMessage({
+          type: "VERSION_DETECTED",
+          version: this.mergeHashWithAppData(manifest, hash)
+        });
       }));
     }
     async notifyClientsAboutVersionReady(manifest, hash) {
@@ -1819,7 +1849,7 @@ ${msgIdle}`, { headers: this.adapter.newHeaders({ "Content-Type": "text/plain" }
     }
   };
 
-  // bazel-out/k8-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/main.mjs
+  // bazel-out/darwin_arm64-fastbuild-ST-2e5f3376adb5/bin/packages/service-worker/worker/main.mjs
   var scope = self;
   var adapter = new Adapter(scope.registration.scope, self.caches);
   new Driver(scope, adapter, new CacheDatabase(adapter));
