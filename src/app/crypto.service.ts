@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Constants to match OpenSSL output
 const iterations = 10000;
