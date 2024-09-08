@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { pipe, tap, withLatestFrom } from 'rxjs';
+import { pipe, switchMap, tap, withLatestFrom } from 'rxjs';
 import { ConstantsService } from '../constants.service';
 import { CryptoService } from '../crypto.service';
 
@@ -56,14 +56,14 @@ export class DecodeStore extends ComponentStore<DecodeState> {
   readonly decode = this.effect<void>(
     pipe(
       withLatestFrom(this.state$),
-      tap(([, state]) => {
+      switchMap(async ([, state]) => {
         let decryptionAttempted = false;
         let decryptionSuccess = false;
         let decrypted = '';
 
         if (state.passPhaseConfirmed && state.encoded && state.passPhase) {
           decryptionAttempted = true;
-          decrypted = this.crypto.decode(state.encoded, state.passPhase);
+          decrypted = await this.crypto.decode(state.encoded, state.passPhase);
           if (decrypted) {
             decryptionSuccess = true;
             if (this.constantsService.isMobile) {

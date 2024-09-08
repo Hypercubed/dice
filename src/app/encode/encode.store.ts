@@ -7,7 +7,7 @@ import { encode } from 'url-safe-base64';
 
 import { CryptoService } from '../crypto.service';
 import { ConstantsService } from '../constants.service';
-import { pipe, tap, withLatestFrom } from 'rxjs';
+import { pipe, switchMap, tap, withLatestFrom } from 'rxjs';
 
 function cleanJoin(strings: Array<string | undefined>) {
   strings = strings
@@ -134,13 +134,13 @@ export class EncodeStore extends ComponentStore<EncodeState> {
   readonly encode = this.effect<void>(
     pipe(
       withLatestFrom(this.state$, this.passPhaseVerified$),
-      tap(([, state, passPhaseVerified]) => {
+      switchMap(async ([, state, passPhaseVerified]) => {
         let encodingErrorMessage = '';
         let encoded = '';
 
         if (passPhaseVerified) {
           try {
-            encoded = this.crypto.encode(state.message, state.passPhase);
+            encoded = await this.crypto.encode(state.message, state.passPhase);
           } catch (e: any) {
             console.error(e);
             encodingErrorMessage = e.message;

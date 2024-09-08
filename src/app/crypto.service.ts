@@ -1,25 +1,20 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import CryptoJS from 'crypto-js';
-
-const { WordArray } = CryptoJS.lib;
-const { Utf8 } = CryptoJS.enc;
-const { OpenSSL } = CryptoJS.format;
-const { AES, MD5 } = CryptoJS;
-export type WordArray = CryptoJS.lib.WordArray;
-
-const DEBUG = false;
+const DEBUG = true;
 
 // Constants to match OpenSSL output
-const hasher = CryptoJS.algo.SHA256;
 const iterations = 10000;
-const SALT_WORDS = 8 / 4;
-const KEY_WORDS = 32 / 4;
-const IV_WORDS = 16 / 4;
-const keySize = KEY_WORDS + IV_WORDS;
+const SALT_LEN = 8;
+const KEY_LEN = 32;
+const IV_LEN = 16;
+const KEY_BITS = (KEY_LEN + IV_LEN) * 8;
 
-const PBKDF2 = CryptoJS.algo.PBKDF2.create({ keySize, iterations, hasher });
+const OpenSSLHeader = convertStringToArrayBufferView('Salted__');
+
+const KeyAlgorithm = 'PBKDF2';
+const EncAlgorithm = 'AES-CBC';
+const Hasher = 'SHA-256';
 
 @Injectable({
   providedIn: 'root',
@@ -27,72 +22,134 @@ const PBKDF2 = CryptoJS.algo.PBKDF2.create({ keySize, iterations, hasher });
 export class CryptoService {
   constructor(public sanitizer: DomSanitizer) {}
 
-  getKey(password: string): [WordArray, WordArray, WordArray] {
-    password = (password || '').trim();
-    DEBUG && console.time('salt');
-    const salt = WordArray.random(SALT_WORDS * 4);
-    DEBUG && console.timeEnd('salt');
-
-    DEBUG && console.time('pbkdf2');
-    const pbk = this.pbkdf2(password, salt);
-    DEBUG && console.timeEnd('pbkdf2');
-
-    return [...pbk, salt];
-  }
-
-  encode(message: string, password: string): string {
+  async encode(message: string, password: string): Promise<string> {
     message = (message || '').trim();
     password = (password || '').trim();
 
-    if (!message || !password) {
-      return '';
-    }
+    if (!message || !password) return '';
 
-    const phraseHash = this.hash(message);
+    const saltBuffer = this.getRandomSaltBuffer();
+    const derivation = await this.getDerivationBits(saltBuffer, password);
+    const keyObject = await this.getKey(derivation);
 
-    const [key, iv, salt] = this.getKey(password);
-    DEBUG && console.time('encrypt');
-    const cipherParams = AES.encrypt(message, key, { iv });
-    DEBUG && console.timeEnd('encrypt');
+    const textEncoder = new TextEncoder();
+    const textBuffer = textEncoder.encode(message);
+    const encryptedBuffer = await crypto.subtle.encrypt(
+      { name: EncAlgorithm, iv: keyObject.iv },
+      keyObject.key,
+      textBuffer
+    );
 
-    cipherParams.salt = salt;
+    const encryptedBytes = new Uint8Array(encryptedBuffer);
 
-    const encoded = OpenSSL.stringify(cipherParams);
+    const mergedArray = new Uint8Array(OpenSSLHeader.length + saltBuffer.length + encryptedBytes.length);
+    mergedArray.set(OpenSSLHeader);
+    mergedArray.set(saltBuffer, OpenSSLHeader.length);
+    mergedArray.set(encryptedBytes, OpenSSLHeader.length + saltBuffer.length);
 
-    // Integrity check
-    const decrypt = this.decode(encoded, password);
-    if (phraseHash !== this.hash(decrypt)) {
+    const encoded = arrayBufferToBase64(mergedArray.buffer);
+
+    const decrypt = await this.decode(encoded, password);
+    if (decrypt !== message) {
       throw new Error('Encrypted message failed to decrypt');
     }
 
     return encoded;
   }
 
-  decode(encrypted: string, password: string) {
+  async decode(encrypted: string, password: string): Promise<string> {
     encrypted = (encrypted || '').replace(/\s/g, '');
     password = (password || '').trim();
 
-    try {
-      const cipherParams = OpenSSL.parse(encrypted);
-      const [key, iv] = this.pbkdf2(password, cipherParams.salt);
+    if (!encrypted || !password) return '';
 
-      return AES.decrypt(cipherParams, key, { iv }).toString(Utf8);
-    } catch (_err) {
+    try {
+      const params = Array.from(atob(encrypted)).map((c) => c.charCodeAt(0));
+      const header = params.slice(0, OpenSSLHeader.length); // TODO: check header
+
+      if (header.join('') !== OpenSSLHeader.join('')) {
+        throw new Error('Invalid header');
+      }
+
+      const salt = params.slice(OpenSSLHeader.length, OpenSSLHeader.length + SALT_LEN);
+      const data = params.slice(OpenSSLHeader.length + SALT_LEN);
+
+      const textDecoder = new TextDecoder('utf-8');
+      const encryptedData = new Uint8Array(data);
+      const saltBuffer = new Uint8Array(salt);
+
+      const derivation = await this.getDerivationBits(saltBuffer, password);
+      const keyObject = await this.getKey(derivation);
+
+      const decryptedText = await crypto.subtle.decrypt(
+        { name: EncAlgorithm, iv: keyObject.iv },
+        keyObject.key,
+        encryptedData
+      );
+      const text = textDecoder.decode(decryptedText);
+
+      return text;
+    } catch (error) {
+      console.error('Error decoding', error);
       return '';
     }
   }
 
-  hash(message: string) {
-    message = (message || '').trim();
-    return MD5(message).toString();
+  private getRandomSaltBuffer(): Uint8Array {
+    DEBUG && console.time('getRandomSaltBuffer');
+    const saltBuffer = window.crypto.getRandomValues(new Uint8Array(SALT_LEN));
+    DEBUG && console.timeEnd('getRandomSaltBuffer');
+
+    return saltBuffer;
   }
 
-  private pbkdf2(password: string, salt: WordArray): [WordArray, WordArray] {
-    const keyIv = PBKDF2.compute(password, salt);
+  private async getDerivationBits(saltBuffer: Uint8Array, password: string): Promise<ArrayBuffer> {
+    const textEncoder = new TextEncoder();
+    const passwordBuffer = textEncoder.encode(password);
+    DEBUG && console.time('getDerivationBits');
+    const importedKey = await crypto.subtle.importKey('raw', passwordBuffer, KeyAlgorithm, false, ['deriveBits']);
+    const bits = crypto.subtle.deriveBits(
+      { name: KeyAlgorithm, hash: Hasher, salt: saltBuffer, iterations: iterations },
+      importedKey,
+      KEY_BITS
+    );
+    DEBUG && console.timeEnd('getDerivationBits');
 
-    const key = WordArray.create(keyIv.words.slice(0, KEY_WORDS));
-    const iv = WordArray.create(keyIv.words.slice(KEY_WORDS, keyIv.words.length));
-
-    return [key, iv];
+    return bits;
   }
+
+  private async getKey(derivation: ArrayBuffer) {
+    const derivedKey = derivation.slice(0, KEY_LEN);
+    const iv = derivation.slice(KEY_LEN);
+    DEBUG && console.time('getKey');
+    const importedEncryptionKey = await crypto.subtle.importKey('raw', derivedKey, { name: EncAlgorithm }, false, [
+      'encrypt',
+      'decrypt',
+    ]);
+    DEBUG && console.timeEnd('getKey');
+
+    return {
+      key: importedEncryptionKey,
+      iv: iv,
+    };
+  }
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
+function convertStringToArrayBufferView(str: string) {
+  var bytes = new Uint8Array(str.length);
+  for (var iii = 0; iii < str.length; iii++) {
+    bytes[iii] = str.charCodeAt(iii);
+  }
+
+  return bytes;
 }

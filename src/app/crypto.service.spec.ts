@@ -46,17 +46,17 @@ describe('CryptoService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should decode a string', () => {
-    testDecoding.forEach((test) => {
-      expect(service.decode(test[2], test[0])).toEqual(test[1]);
-    });
+  it('should decode a string', async () => {
+    for (const test of testDecoding) {
+      expect(await service.decode(test[2], test[0])).toEqual(test[1]);
+    }
   });
 
-  it('should encode/decode a string', () => {
-    testDecoding.forEach((test) => {
-      const encode = service.encode(test[1], test[0]);
-      const decode = service.decode(encode, test[0]);
+  it('should encode/decode a string', async () => {
+    for (const test of testDecoding) {
+      const encode = await service.encode(test[1], test[0]);
+      const decode = await service.decode(encode, test[0]);
       expect(decode).toEqual(test[1]);
-    });
+    }
   });
 });
