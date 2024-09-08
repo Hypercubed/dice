@@ -12,7 +12,7 @@
     "test": "run-s test:*",
     "test:prettier": "prettier \"src/**/*.{ts,js,css,md}\" --check",
     "test:lint": "nx lint",
-    "test:unit": "nx test --no-watch",
+    "test:unit": "nx test --browsers=Headless --no-watch",
     "predeploy": "npm run build",
     "deploy": "node ./scripts/deploy-version.js",
     "lint": "nx lint",
