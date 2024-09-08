@@ -48,16 +48,16 @@ app-encode {
   .main-password {
     password-strength-meter {
       position: absolute;
-      bottom: 2px;
-      left: -10px;
-      right: -10px;
+      bottom: 0px;
+      left: -16px;
+      right: -16px;
 
       .strength-meter {
         margin: 0 !important;
       }
     }
 
-    .mat-form-field-underline {
+    .mdc-line-ripple {
       display: none !important;
     }
 
