@@ -43,21 +43,37 @@ DICE is designed to be easily deployed to any static hosting sites. Feel free to
 - https://gateway.pinata.cloud/ipfs/QmboFxoGxf3PSkYASZ2X56Pwv6quKrcW6sdoCdqVRgSMeX/#/
 - https://hypercubed.itch.io/dice
 
-### Encoding Method
+### Encoding Method, Compatibility with OpenSSL
 
-Text is encrypted using AES (with PBKDF2, CBC block and random IV) then base64 encoded using the same method used by `openssl`. `openssl` encryption and decryption command lines are shown below. The QR code is generated from the url safe base64 encoded encrypted text and the current application url (optionally disabled).
+Text is encrypted using AES (with PBKDF2, CBC block and random IV) then base64 encoded using the same method used by `openssl`. `openssl` encryption and decryption command lines are shown below. The QR code is generated from the base64 encoded encrypted text and the current application URL (optionally disabled). If the the QR code is generated with the application URL, the encrypted text URL safe encoded and appended to the URL as a query parameter.
 
-Examples:
+Encode:
 
 ```sh
-> echo "secret message" | openssl enc -e -aes-256-cbc -base64 -A -pbkdf2
+> echo "Hello World!" | openssl enc -e -aes-256-cbc -A -base64 -pbkdf2 -md sha256 -iter 10000
 enter aes-256-cbc encryption password:
 Verifying - enter aes-256-cbc encryption password:
-U2FsdGVkX1+YgsU2eR8IuwEu8vBpQY6cvTU5jcx66Fc=
+U2FsdGVkX1/Kf8Yo6JjBh+qELWhirAXr78+bbPQjlxE=
+```
 
-> echo -n "U2FsdGVkX1+YgsU2eR8IuwEu8vBpQY6cvTU5jcx66Fc=" | openssl enc -d -aes-256-cbc -base64 -A -pbkdf2
+Decode:
+
+```sh
+> echo -n "U2FsdGVkX1/Kf8Yo6JjBh+qELWhirAXr78+bbPQjlxE=" | openssl enc -d -aes-256-cbc -A -base64 -pbkdf2 -md sha256 -iter 10000
 enter aes-256-cbc decryption password:
-secret message
+Hello World!
+```
+
+If the encrypted value contains spaces, they should be removed before decoding or use [basenc](https://man7.org/linux/man-pages/man1/basenc.1.html) (`basenc -di --base64`) to "ignore junk" before passing to openssl (see example below). Notice that the `-A -base64` flags are removed from the `openssl` command line since `basenc` will decode the base64 encoded string.
+
+```sh
+> echo -n "U2Fs dGVk X1/K f8Yo 6JjB h+qE LWhi rAXr 78+b bPQj lxE=" | basenc -di --base64 | openssl enc -d -aes-256-cbc -pbkdf2 -md sha256 -iter 10000
+```
+
+If the encrypted value contains `-` or `_` characters, they should be replaced with `+` and `/` respectively before decoding. This is only needed if the encrypted value was extracted from a URL embedded in a QRCode by DICE. You may also use [basenc](https://man7.org/linux/man-pages/man1/basenc.1.html) (`basenc -di --base64url`) to URL safe base64 decode the encrypted value before passing to openssl (see example below).
+
+```sh
+echo -n "U2FsdGVkX1_Kf8Yo6JjBh-qELWhirAXr78-bbPQjlxE=" | basenc -di --base64url | openssl enc -d -aes-256-cbc -pbkdf2 -md sha256 -iter 10000
 ```
 
 > **Note:** The `openssl` command on MacOS may point to LibreSSL. If so you may need to install OpenSSL.
@@ -66,7 +82,7 @@ secret message
 
 ## More About DICE
 
-DICE was created by Jayson Harshbarger (Hypercubed).  Born out of a personal need for a secure and reliable way to store sensitive information offline.  As someone who values control over my data, I found existing solutions lacking in either security or convenience.
+DICE was created by Jayson Harshbarger (Hypercubed). Born out of a personal need for a secure and reliable way to store sensitive information offline. As someone who values control over my data, I found existing solutions lacking in either security or convenience.
 
 I began developing DICE several years ago and have used it personally to protect my backup codes, and other confidential information. The experience has been invaluable, and I've witnessed firsthand how it can safeguard your digital life.
 
