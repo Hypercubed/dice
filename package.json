@@ -9,7 +9,7 @@
     "build": "nx build --configuration production",
     "watch": "nx build --watch --configuration development",
     "watch:unit": "nx test",
-    "watch:e2e": "nx e2e --ui",
+    "watch:e2e": "nx e2e --ui-host=0.0.0.0 --debug",
     "test": "run-s test:*",
     "test:prettier": "prettier \"src/**/*.{ts,js,css,md}\" --check",
     "test:lint": "nx lint",
