@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CryptoService } from './crypto.service';
+import { encrypt, decrypt } from './salted';
 
 const testDecoding = [
   // Encoded using Dice
@@ -32,9 +33,23 @@ const testDecoding = [
     'Reduced analyzing knowledge base',
     'U2FsdGVkX19loYHdQu3erlXT/1j4XPee+yFtxKpA+WOSpOa8zqZgu+yxSzC1xxlaAlmzPunXhIG6laelq3EPbQ==',
   ],
+  // Base64 Encoded
+  ['p4$$w0rd', 'Hello World!', 'U2FsdGVkX1+AmMQPgqEHqep6rOjycI6oFSW7DTmNs/k='],
+  // base64url Encoded
+  ['p4$$w0rd', 'Hello World!', 'U2FsdGVkX1_zTado483L_ww6wAOKHbcVBu--T8bYCl0='],
+  // base64 Encoded + padding
+  ['p4$$w0rd', 'Hello World!', 'U2Fs dGVk X1+M oDtu MDcj YEGI KSFK Y2Z3 k7xw Tfid 9XM='],
+  // base64url Encoded + padding
+  ['p4$$w0rd', 'Hello World!', 'U2Fs dGVk X1-p JN_n d1wl kbUI zOAP t2qJ RA4R riVj cgQ='],
+  // missing padding
+  ['p4$$w0rd', 'Hello World!', 'U2FsdGVkX18TCRov0Bv3QfACP7UBFxSNbvnYovj8cPY'],
+  // extra padding
+  ['p4$$w0rd', 'Hello World!', 'U2FsdGVkX19eKUhE/+SYqTO5Z/zzP6pvJGKBo14UI64=========='],
+  // url + base64url Encoded
+  ['p4$$w0rd', 'Hello World!', 'http://foo.com/#/decode/U2FsdGVkX18sSRmSGaQgnduw7ubg5Lg9whW1UvoK_mc='],
 ];
 
-describe('CryptoService', () => {
+describe('Salted', () => {
   let service: CryptoService;
 
   beforeEach(() => {
@@ -48,15 +63,15 @@ describe('CryptoService', () => {
 
   it('should decode a string', async () => {
     for (const test of testDecoding) {
-      expect(await service.decode(test[2], test[0])).toEqual(test[1]);
+      expect(await decrypt(test[2], test[0])).toEqual(test[1]);
     }
   });
 
   it('should encode/decode a string', async () => {
     for (const test of testDecoding) {
-      const encode = await service.encode(test[1], test[0]);
-      const decode = await service.decode(encode, test[0]);
-      expect(decode).toEqual(test[1]);
+      const encoded = await encrypt(test[1], test[0]);
+      const decoded = await decrypt(encoded, test[0]);
+      expect(decoded).toEqual(test[1]);
     }
   });
 });

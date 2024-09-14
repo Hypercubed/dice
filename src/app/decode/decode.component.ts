@@ -11,15 +11,7 @@ import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/materi
 import { MatStep } from '@angular/material/stepper';
 import { MatInput } from '@angular/material/input';
 import { DecodeStore } from './decode.store';
-
-// move to utils
-function cleanup(encoded: string) {
-  if (encoded.includes('http')) {
-    const segments = encoded.split('/');
-    encoded = segments[segments.length - 1];
-  }
-  return decodeSafeBase64(encoded).replace(/\s/g, '');
-}
+import { cleanupEncodedText } from '../salted';
 
 @Component({
   selector: 'app-decode',
@@ -77,7 +69,7 @@ export class DecodeComponent implements OnInit {
         debounceTime(200),
         distinctUntilChanged(),
         tap((encoded) => {
-          encoded = cleanup(encoded);
+          encoded = cleanupEncodedText(encoded);
 
           // TODO: move to validators
           const invalid = !isBase64(encoded);
@@ -150,7 +142,7 @@ export class DecodeComponent implements OnInit {
   }
 
   private onRead(encoded: string) {
-    encoded = cleanup(encoded);
+    encoded = cleanupEncodedText(encoded);
     if (encoded !== this.encoded.value) {
       this.encoded.setValue(encoded);
     }
