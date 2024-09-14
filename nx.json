@@ -24,7 +24,8 @@
       "cache": true
     },
     "e2e": {
-      "cache": true
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "nxCloudAccessToken": "NGU1MmY5MjYtYzAwYS00NjMyLWIzOTktYTJmN2M3NzhhMGExfHJlYWQtd3JpdGU=",
