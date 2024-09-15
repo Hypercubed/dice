@@ -13,9 +13,8 @@ describe('EncodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatSnackBarModule, FormsModule, ReactiveFormsModule, PasswordStrengthMeterComponent],
+      imports: [MatSnackBarModule, FormsModule, ReactiveFormsModule, PasswordStrengthMeterComponent, EncodeComponent],
       providers: [IPasswordStrengthMeterService],
-      declarations: [EncodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });

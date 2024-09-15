@@ -15,8 +15,7 @@ describe('DecodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatToolbarModule, MatSnackBarModule, FormsModule, ReactiveFormsModule],
-      declarations: [DecodeComponent],
+      imports: [MatToolbarModule, MatSnackBarModule, FormsModule, ReactiveFormsModule, DecodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

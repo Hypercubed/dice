@@ -9,7 +9,7 @@ describe('InstructionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [InstructionsComponent],
+      imports: [InstructionsComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });

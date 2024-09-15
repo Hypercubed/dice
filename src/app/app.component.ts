@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Renderer2, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule, MatIconAnchor, MatAnchor } from '@angular/material/button';
+import { MatIconModule, MatIcon } from '@angular/material/icon';
+import { MatToolbarModule, MatToolbar } from '@angular/material/toolbar';
 import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -10,15 +10,8 @@ import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } f
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  // imports: [
-  //   CommonModule,
-  //   MatToolbarModule,
-  //   MatIconModule,
-  //   MatButtonModule,
-  //   RouterOutlet,
-  //   RouterLink,
-  //   RouterLinkActive,
-  // ]
+  standalone: true,
+  imports: [MatToolbar, MatIconAnchor, RouterLink, MatIcon, MatAnchor, RouterLinkActive, RouterOutlet],
 })
 export class AppComponent {
   previousUrl = '';
