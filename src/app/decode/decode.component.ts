@@ -1,32 +1,62 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { Html5QrcodeScanner } from 'html5-qrcode/esm/html5-qrcode-scanner';
 import { debounceTime, distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
 import { decode as decodeSafeBase64, isBase64, isUrlSafeBase64 } from 'url-safe-base64';
 
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
-import { MatStep } from '@angular/material/stepper';
-import { MatInput } from '@angular/material/input';
+import { MatStep, MatStepperModule } from '@angular/material/stepper';
+import { MatFormField, MatInput, MatInputModule } from '@angular/material/input';
 import { DecodeStore } from './decode.store';
 import { cleanupEncodedText } from '../salted';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @Component({
+  standalone: true,
   selector: 'app-decode',
   templateUrl: './decode.component.html',
   styleUrls: ['./decode.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+
+    ClipboardModule,
+    MatStepperModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    MatBadgeModule,
+  ],
   providers: [DecodeStore, { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher }],
   encapsulation: ViewEncapsulation.None,
 })
 export class DecodeComponent implements OnInit {
   vm$ = this.store.vm$;
 
-  passPhase = new UntypedFormControl('');
-  encoded = new UntypedFormControl('');
+  passPhase = new FormControl<string>('');
+  encoded = new FormControl<string>('');
 
-  form = new UntypedFormGroup({
+  form = new FormGroup({
     passPhase: this.passPhase,
     encoded: this.encoded,
   });
@@ -52,7 +82,7 @@ export class DecodeComponent implements OnInit {
         takeUntil(this.store.destroy$),
         tap((passPhase) => {
           this.store.patchState({
-            passPhase,
+            passPhase: passPhase || '',
             decryptionSuccess: false,
             passPhaseConfirmed: false,
             decrypted: '',
@@ -69,7 +99,7 @@ export class DecodeComponent implements OnInit {
         debounceTime(200),
         distinctUntilChanged(),
         tap((encoded) => {
-          encoded = cleanupEncodedText(encoded);
+          encoded = cleanupEncodedText(encoded || '');
 
           // TODO: move to validators
           const invalid = !isBase64(encoded);

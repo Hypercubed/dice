@@ -5,7 +5,7 @@
         <mat-label>Encryption pass phase</mat-label>
         <input matInput type="password" formControlName="password" autocomplete="new-password" />
         <password-strength-meter
-          [password]="password.value"
+          [password]="password.value || ''"
           [minPasswordLength]="0"
           [enableFeedback]="false"></password-strength-meter>
         <mat-hint>

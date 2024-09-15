@@ -1,18 +1,28 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { AbstractControl, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatStep } from '@angular/material/stepper';
-import { MatInput } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatStep, MatStepperModule } from '@angular/material/stepper';
+import { MatInput, MatInputModule } from '@angular/material/input';
 
-import { QRCodeComponent } from 'angularx-qrcode';
+import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
 
 // @ts-ignore
 import { saveUri, createCanvas } from 'svgsaver/src/saveuri.js';
 
 import { debounceTime, distinctUntilChanged, takeUntil, tap, startWith, filter, delay } from 'rxjs/operators';
 
-import { EncodeStore } from './encode.store';
+import { EncodeState, EncodeStore } from './encode.store';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { PasswordStrengthMeterComponent } from 'angular-password-strength-meter';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatBadgeModule } from '@angular/material/badge';
 
 const { ClipboardItem } = window as any;
 const { clipboard } = window.navigator as any;
@@ -33,24 +43,45 @@ function confirmValidator(password: AbstractControl): ValidatorFn {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-encode',
   templateUrl: './encode.component.html',
   styleUrls: ['./encode.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+
+    ClipboardModule,
+    MatStepperModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
+    MatBadgeModule,
+
+    QRCodeModule,
+    PasswordStrengthMeterComponent,
+  ],
   providers: [EncodeStore],
 })
 export class EncodeComponent implements OnInit {
   vm$ = this.store.vm$;
 
-  readonly password = new UntypedFormControl('');
-  readonly confirmPassPhase = new UntypedFormControl('', {
+  readonly password = new FormControl('');
+  readonly confirmPassPhase = new FormControl('', {
     validators: [confirmValidator(this.password)],
     updateOn: 'change',
   });
-  readonly message = new UntypedFormControl('');
-  readonly includeUrl = new UntypedFormControl(true);
+  readonly message = new FormControl('');
+  readonly includeUrl = new FormControl(true);
 
-  readonly form = new UntypedFormGroup({
+  readonly form = new FormGroup({
     password: this.password,
     confirmPassPhase: this.confirmPassPhase,
     message: this.message,
@@ -88,8 +119,8 @@ export class EncodeComponent implements OnInit {
           }
         })
       )
-      .subscribe((passPhase: string) => {
-        this.store.setPassPhase(passPhase);
+      .subscribe((passPhase) => {
+        this.store.setPassPhase(passPhase || '');
       });
 
     // Focus on input when password is complete
@@ -110,7 +141,7 @@ export class EncodeComponent implements OnInit {
         takeUntil(this.store.destroy$),
         debounceTime(200),
         tap((values) => {
-          this.store.patchState(values);
+          this.store.patchState(values as EncodeState);
         })
       )
       .subscribe(() => {

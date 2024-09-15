@@ -1,10 +1,24 @@
-import { Component, Renderer2 } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, Renderer2, ViewEncapsulation } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  // imports: [
+  //   CommonModule,
+  //   MatToolbarModule,
+  //   MatIconModule,
+  //   MatButtonModule,
+  //   RouterOutlet,
+  //   RouterLink,
+  //   RouterLinkActive,
+  // ]
 })
 export class AppComponent {
   previousUrl = '';

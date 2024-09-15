@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
+import { CommonModule, HashLocationStrategy, Location, LocationStrategy } from '@angular/common';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,21 +10,37 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { InstructionsComponent } from './instructions/instructions.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { AppEncodeModule } from './encode/encode.module';
-import { AppDecodeModule } from './decode/decode.module';
 import { provideZxvbnServiceForPSM } from 'angular-password-strength-meter/zxcvbn';
+import { provideRouter, RouterLink, RouterLinkActive, RouterOutlet, Routes } from '@angular/router';
+import { EncodeComponent } from './encode/encode.component';
+import { DecodeComponent } from './decode/decode.component';
+
+const routes: Routes = [
+  { path: '', component: InstructionsComponent },
+  {
+    path: 'encode',
+    component: EncodeComponent,
+  },
+  {
+    path: 'decode',
+    component: DecodeComponent,
+  },
+  {
+    path: 'decode/:encoded',
+    component: DecodeComponent,
+  },
+];
 
 @NgModule({
-  declarations: [AppComponent, InstructionsComponent],
+  declarations: [AppComponent],
   imports: [
+    CommonModule,
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatIconModule,
@@ -32,17 +48,24 @@ import { provideZxvbnServiceForPSM } from 'angular-password-strength-meter/zxcvb
     MatCardModule,
     MatDividerModule,
     MatExpansionModule,
-    // PasswordStrengthMeterModule.forRoot(DEFAULT_PSM_OPTIONS),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    AppEncodeModule,
-    AppDecodeModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    // AppEncodeModule,
+    // AppDecodeModule,
   ],
-  providers: [Location, { provide: LocationStrategy, useClass: HashLocationStrategy }, provideZxvbnServiceForPSM()],
+  providers: [
+    Location,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    provideZxvbnServiceForPSM(),
+    provideRouter(routes),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
