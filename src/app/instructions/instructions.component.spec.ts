@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { InstructionsComponent } from './instructions.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('InstructionsComponent', () => {
   let component: InstructionsComponent;
@@ -9,7 +10,7 @@ describe('InstructionsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InstructionsComponent],
+      imports: [NoopAnimationsModule, InstructionsComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });
