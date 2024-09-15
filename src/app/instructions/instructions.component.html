@@ -176,11 +176,15 @@
     </p>
     <p>
       <strong>Use OpenSSL to encode: </strong>
-      <code ngNonBindable>echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -a -A -pbkdf2</code>
+      <code ngNonBindable
+        >echo -n "{{secret message}}" | openssl enc -e -aes-256-cbc -base64 -A -pbkdf2 -md sha256 -iter 10000</code
+      >
     </p>
     <p>
       <strong>Use OpenSSL to decode: </strong>
-      <code ngNonBindable>echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -a -A -pbkdf2</code>
+      <code ngNonBindable
+        >echo -n "{{encrypted message}}" | openssl enc -d -aes-256-cbc -a -A -pbkdf2 -md sha256 -iter 10000</code
+      >
     </p>
     <p>
       <strong>Use OpenSSL and <a href="https://www.npmjs.com/package/qrcode">qrcode</a> to generate a qr code: </strong>
