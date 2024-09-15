@@ -5,7 +5,9 @@ const SALT_LEN = 8;
 const KEY_LEN = 32;
 const IV_LEN = 16;
 const KEY_BITS = (KEY_LEN + IV_LEN) * 8;
-const OpenSSLHeader = convertStringToArrayBufferView('Salted__');
+
+const Salted = 'Salted__';
+const SaltedBase64 = btoa(Salted).slice(0, 9);
 
 const DEBUG = false;
 
@@ -14,6 +16,7 @@ interface EncryptionOptions {
   keyAlgorithm: 'PBKDF2' | string;
   encAlgorithm: 'AES-CBC' | string;
   hashAlgorithm: 'SHA-256' | string;
+  integrityCheck?: boolean;
 }
 
 const DefaultOptions: EncryptionOptions = {
@@ -21,6 +24,7 @@ const DefaultOptions: EncryptionOptions = {
   keyAlgorithm: 'PBKDF2',
   encAlgorithm: 'AES-CBC',
   hashAlgorithm: 'SHA-256',
+  integrityCheck: true,
 };
 
 export async function encrypt(
@@ -40,25 +44,20 @@ export async function encrypt(
   const keyObject = await getKey(derivation, _options);
 
   const textEncoder = new TextEncoder();
-  const textBuffer = textEncoder.encode(message);
   const encryptedBuffer = await crypto.subtle.encrypt(
     { name: _options.encAlgorithm, iv: keyObject.iv },
     keyObject.key,
-    textBuffer
+    textEncoder.encode(message)
   );
 
-  const encryptedBytes = new Uint8Array(encryptedBuffer);
+  const encodedBuffer = concatBuffers([textEncoder.encode(Salted), saltBuffer, encryptedBuffer]);
+  const encoded = bufferToBase64(encodedBuffer);
 
-  const mergedArray = new Uint8Array(OpenSSLHeader.length + saltBuffer.length + encryptedBytes.length);
-  mergedArray.set(OpenSSLHeader);
-  mergedArray.set(saltBuffer, OpenSSLHeader.length);
-  mergedArray.set(encryptedBytes, OpenSSLHeader.length + saltBuffer.length);
-
-  const encoded = arrayBufferToBase64(mergedArray.buffer);
-
-  const decrypted = await decrypt(encoded, password);
-  if (decrypted !== message) {
-    throw new Error('Encrypted message failed to decrypt');
+  if (_options.integrityCheck) {
+    const decrypted = await decrypt(encoded, password);
+    if (decrypted !== message) {
+      throw new Error('Encrypted message failed to decrypt');
+    }
   }
 
   return encoded;
@@ -78,48 +77,31 @@ export async function decrypt(
 
   if (!encrypted || !password) return '';
 
-  try {
-    const params = Array.from(atob(encrypted)).map((c) => c.charCodeAt(0));
-    const header = params.slice(0, OpenSSLHeader.length); // TODO: check header
+  const encryptedBuffer = base64ToBuffer(encrypted);
 
-    if (header.join('') !== OpenSSLHeader.join('')) {
-      throw new Error('Invalid header');
-    }
+  const salt = encryptedBuffer.slice(Salted.length, Salted.length + SALT_LEN);
+  const data = encryptedBuffer.slice(Salted.length + SALT_LEN);
 
-    const salt = params.slice(OpenSSLHeader.length, OpenSSLHeader.length + SALT_LEN);
-    const data = params.slice(OpenSSLHeader.length + SALT_LEN);
+  const derivation = await getDerivationBits(salt, password, _options);
+  const { iv, key } = await getKey(derivation, _options);
 
-    const textDecoder = new TextDecoder('utf-8');
-    const encryptedData = new Uint8Array(data);
-    const saltBuffer = new Uint8Array(salt);
+  const decryptedText = await crypto.subtle.decrypt({ name: _options.encAlgorithm, iv }, key, data);
 
-    const derivation = await getDerivationBits(saltBuffer, password, _options);
-    const keyObject = await getKey(derivation, _options);
-
-    const decryptedText = await crypto.subtle.decrypt(
-      { name: _options.encAlgorithm, iv: keyObject.iv },
-      keyObject.key,
-      encryptedData
-    );
-    const text = textDecoder.decode(decryptedText);
-
-    return text;
-  } catch (error) {
-    console.error('Error decoding', error);
-    return '';
-  }
+  const textDecoder = new TextDecoder();
+  return textDecoder.decode(decryptedText);
 }
 
 async function getDerivationBits(
-  saltBuffer: Uint8Array,
+  saltBuffer: BufferSource,
   password: string,
   options: EncryptionOptions
 ): Promise<ArrayBuffer> {
   const textEncoder = new TextEncoder();
-  const passwordBuffer = textEncoder.encode(password);
   DEBUG && console.time('getDerivationBits');
-  const importedKey = await crypto.subtle.importKey('raw', passwordBuffer, options.keyAlgorithm, false, ['deriveBits']);
-  const bits = crypto.subtle.deriveBits(
+  const importedKey = await crypto.subtle.importKey('raw', textEncoder.encode(password), options.keyAlgorithm, false, [
+    'deriveBits',
+  ]);
+  const bits = await crypto.subtle.deriveBits(
     { name: options.keyAlgorithm, hash: options.hashAlgorithm, salt: saltBuffer, iterations: options.iterations },
     importedKey,
     KEY_BITS
@@ -156,25 +138,6 @@ function getRandomSaltBuffer(): Uint8Array {
   return saltBuffer;
 }
 
-function convertStringToArrayBufferView(str: string) {
-  var bytes = new Uint8Array(str.length);
-  for (var iii = 0; iii < str.length; iii++) {
-    bytes[iii] = str.charCodeAt(iii);
-  }
-
-  return bytes;
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  var binary = '';
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}
-
 export function cleanupEncodedText(encoded: string) {
   if (encoded.includes('http')) {
     // remove URL
@@ -190,8 +153,50 @@ export function cleanupEncodedText(encoded: string) {
   return encoded;
 }
 
-function validateEncodedText(encoded: string) {
-  if (!encoded.startsWith('U2FsdGVkX1')) throw new Error('Invalid encoded text');
+export function validateEncodedText(encoded: string) {
+  if (!encoded.startsWith(SaltedBase64)) throw new Error('Invalid encoded text');
   if (!isBase64(encoded)) throw new Error('Invalid base64 encoding');
   return true;
+}
+
+//  ************ BUFFER UTILS ************
+
+function concatBuffers(buffers: Array<Uint8Array | ArrayBuffer>): Uint8Array {
+  // Calculate total length
+  const totalLength = buffers.reduce((acc, buf) => acc + buf.byteLength, 0);
+
+  // Create a new ArrayBuffer
+  const result = new ArrayBuffer(totalLength);
+
+  // Create a view to write data
+  const view = new Uint8Array(result);
+
+  // Copy data from each buffer
+  let offset = 0;
+  buffers.forEach((buffer) => {
+    view.set(new Uint8Array(buffer), offset);
+    offset += buffer.byteLength;
+  });
+
+  return view;
+}
+
+function base64ToBuffer(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function bufferToBase64(buffer: Uint8Array): string {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }

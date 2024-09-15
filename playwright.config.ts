@@ -36,9 +36,20 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         ignoreHTTPSErrors: true,
-        // launchOptions: {
-        //   args: ['--ignore-certificate-errors'],
-        // },
+      },
+    },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+        ignoreHTTPSErrors: true,
       },
     },
   ],

@@ -62,7 +62,11 @@ export class DecodeStore extends ComponentStore<DecodeState> {
 
         if (state.passPhaseConfirmed && state.encoded && state.passPhase) {
           decryptionAttempted = true;
-          decrypted = await this.crypto.decode(state.encoded, state.passPhase);
+          try {
+            decrypted = await this.crypto.decode(state.encoded, state.passPhase);
+          } catch (e) {
+            decrypted = '';
+          }
           if (decrypted) {
             decryptionSuccess = true;
             if (this.constantsService.isMobile) {

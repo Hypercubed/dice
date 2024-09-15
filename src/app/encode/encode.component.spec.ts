@@ -3,17 +3,18 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { PasswordStrengthMeterComponent } from 'angular-password-strength-meter';
+import { IPasswordStrengthMeterService, PasswordStrengthMeterComponent } from 'angular-password-strength-meter';
 
 import { EncodeComponent } from './encode.component';
 
-xdescribe('EncodeComponent', () => {
+describe('EncodeComponent', () => {
   let component: EncodeComponent;
   let fixture: ComponentFixture<EncodeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatSnackBarModule, FormsModule, ReactiveFormsModule, PasswordStrengthMeterComponent],
+      providers: [IPasswordStrengthMeterService],
       declarations: [EncodeComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
