@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { IPasswordStrengthMeterService } from 'angular-password-strength-meter';
 import { Location } from '@angular/common';
@@ -53,6 +53,11 @@ export interface EncodeState {
 
 @Injectable()
 export class EncodeStore extends ComponentStore<EncodeState> {
+  private readonly passwordStrengthMeterService = inject(IPasswordStrengthMeterService);
+  private readonly crypto = inject(CryptoService);
+  private readonly location = inject(Location);
+  private readonly constantsService = inject(ConstantsService);
+
   readonly passPhaseVerified$ = this.select((state) => {
     return !!state.confirmPassPhase && state.confirmPassPhase === state.passPhase;
   });
@@ -86,12 +91,7 @@ export class EncodeStore extends ComponentStore<EncodeState> {
     })
   );
 
-  constructor(
-    private readonly passwordStrengthMeterService: IPasswordStrengthMeterService,
-    private readonly crypto: CryptoService,
-    private readonly location: Location,
-    private readonly constantsService: ConstantsService
-  ) {
+  constructor() {
     super({
       passPhase: '',
       passPhaseHint: '',

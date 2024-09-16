@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { pipe, switchMap, tap, withLatestFrom } from 'rxjs';
+import { pipe, switchMap, withLatestFrom } from 'rxjs';
 import { ConstantsService } from '../constants.service';
 import { CryptoService } from '../crypto.service';
 
@@ -31,6 +31,9 @@ function beep(vol: number, freq: number, duration: number) {
 
 @Injectable()
 export class DecodeStore extends ComponentStore<DecodeState> {
+  private readonly crypto = inject(CryptoService);
+  private readonly constantsService = inject(ConstantsService);
+
   readonly vm$ = this.select(this.state$, (state) => ({
     ...state,
   }));
@@ -39,7 +42,7 @@ export class DecodeStore extends ComponentStore<DecodeState> {
     return state.base64Encoded;
   });
 
-  constructor(private readonly crypto: CryptoService, private readonly constantsService: ConstantsService) {
+  constructor() {
     super({
       passPhase: '',
       passPhaseConfirmed: false,

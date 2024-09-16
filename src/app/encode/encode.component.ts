@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -71,6 +71,9 @@ function confirmValidator(password: AbstractControl): ValidatorFn {
   providers: [EncodeStore],
 })
 export class EncodeComponent implements OnInit {
+  private readonly store = inject(EncodeStore);
+  private readonly snackBar = inject(MatSnackBar);
+
   vm$ = this.store.vm$;
 
   readonly password = new FormControl('');
@@ -101,8 +104,6 @@ export class EncodeComponent implements OnInit {
     const img: HTMLImageElement = this.qrCode.qrcElement.nativeElement.getElementsByTagName('img')[0];
     return img.getAttribute('src');
   }
-
-  constructor(private readonly store: EncodeStore, private readonly snackBar: MatSnackBar) {}
 
   ngOnInit() {
     // Clear confirm password field when password field changes

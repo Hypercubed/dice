@@ -1,4 +1,5 @@
-<form [formGroup]="form" *ngIf="vm$ | async as vm">
+@if (vm$ | async; as vm) {
+<form [formGroup]="form">
   <mat-stepper orientation="vertical" [linear]="true">
     <mat-step [completed]="vm.passPhaseVerified" [optional]="false" label="Encryption pass phase" state="phone">
       <mat-form-field class="full-width main-password" appearance="fill">
@@ -10,7 +11,9 @@
           [enableFeedback]="false"></password-strength-meter>
         <mat-hint>
           {{ vm.passPhaseHint }}
-          <mat-icon *ngIf="vm.passPhaseSuggestions as tips" [matTooltip]="tips">info</mat-icon>
+          @if (vm.passPhaseSuggestions; as tips) {
+          <mat-icon [matTooltip]="tips">info</mat-icon>
+          }
         </mat-hint>
       </mat-form-field>
       <div>&nbsp;</div>
@@ -18,7 +21,9 @@
         <mat-label>Confirm Pass phase</mat-label>
         <input matInput type="password" formControlName="confirmPassPhase" autocomplete="new-password" />
         <mat-hint>Confirm encryption pass phase</mat-hint>
-        <mat-error *ngIf="confirmPassPhase.hasError('notConfirmed')"> Pass phase is not the same </mat-error>
+        @if (confirmPassPhase.hasError('notConfirmed')) {
+        <mat-error> Pass phase is not the same </mat-error>
+        }
       </mat-form-field>
     </mat-step>
     <mat-step
@@ -36,11 +41,12 @@
       </mat-form-field>
     </mat-step>
   </mat-stepper>
-
   <div id="section-to-print">
-    <mat-card class="results-card" *ngIf="vm.encryptedText" matBadge="3" matBadgePosition="before" matBadgeSize="large">
+    @if (vm.encryptedText) {
+    <mat-card class="results-card" matBadge="3" matBadgePosition="before" matBadgeSize="large">
       <mat-card-content class="result-container">
-        <div class="result-container__qr" *ngIf="vm.qrContent">
+        @if (vm.qrContent) {
+        <div class="result-container__qr">
           <div (click)="copyImage()">
             <qrcode
               (click)="copyImage()"
@@ -54,6 +60,7 @@
             <mat-checkbox formControlName="includeUrl" class="no-print">Include URL in QR code</mat-checkbox>
           </div>
         </div>
+        }
         <div class="result-container__code">
           {{ vm.encryptedText }}
         </div>
@@ -64,5 +71,7 @@
         <button mat-raised-button (click)="downloadImage()">Download QR Code</button>
       </mat-card-actions>
     </mat-card>
+    }
   </div>
 </form>
+}

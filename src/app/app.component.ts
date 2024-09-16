@@ -1,8 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component, Renderer2, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule, MatIconAnchor, MatAnchor } from '@angular/material/button';
-import { MatIconModule, MatIcon } from '@angular/material/icon';
-import { MatToolbarModule, MatToolbar } from '@angular/material/toolbar';
+import { Component, inject, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import { MatIconAnchor, MatAnchor } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatToolbar } from '@angular/material/toolbar';
 import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -13,10 +12,13 @@ import { NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } f
   standalone: true,
   imports: [MatToolbar, MatIconAnchor, RouterLink, MatIcon, MatAnchor, RouterLinkActive, RouterOutlet],
 })
-export class AppComponent {
-  previousUrl = '';
+export class AppComponent implements OnInit {
+  private readonly renderer = inject(Renderer2);
+  private readonly router = inject(Router);
 
-  constructor(private renderer: Renderer2, private router: Router) {
+  private previousUrl = '';
+
+  ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (this.previousUrl) {

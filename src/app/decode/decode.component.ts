@@ -1,23 +1,16 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from '@angular/forms';
+import { Component, ElementRef, inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { Html5QrcodeScanner } from 'html5-qrcode/esm/html5-qrcode-scanner';
 import { debounceTime, distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
-import { decode as decodeSafeBase64, isBase64, isUrlSafeBase64 } from 'url-safe-base64';
+import { isBase64, isUrlSafeBase64 } from 'url-safe-base64';
 
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { MatStep, MatStepperModule } from '@angular/material/stepper';
-import { MatFormField, MatInput, MatInputModule } from '@angular/material/input';
+import { MatInput, MatInputModule } from '@angular/material/input';
 import { DecodeStore } from './decode.store';
 import { cleanupEncodedText } from '../salted';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -51,6 +44,10 @@ import { MatBadgeModule } from '@angular/material/badge';
   encapsulation: ViewEncapsulation.None,
 })
 export class DecodeComponent implements OnInit {
+  private readonly store = inject(DecodeStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
+
   vm$ = this.store.vm$;
 
   passPhase = new FormControl<string>('');
@@ -69,12 +66,6 @@ export class DecodeComponent implements OnInit {
   private encodedInput!: MatInput;
 
   private html5QrcodeScanner!: Html5QrcodeScanner | undefined;
-
-  constructor(
-    private readonly store: DecodeStore,
-    private readonly route: ActivatedRoute,
-    private readonly location: Location
-  ) {}
 
   ngOnInit() {
     this.passPhase.valueChanges
